@@ -37,6 +37,10 @@ async def brah2(_, msg):
 # vc invite
 @app.on_message(filters.video_chat_members_invited)
 async def brah3(app: app, message: Message):
+    # Check if message.from_user is not None
+    if message.from_user is None:
+        return  # Exit the function if there's no from_user
+
     text = f"➪ {message.from_user.mention}\n\n<b>๏ ɪɴᴠɪᴛɪɴɢ ɪɴ ᴠᴄ ᴛᴏ :</b>\n\n➪ "
     x = 0
     for user in message.video_chat_members_invited.users:
