@@ -91,7 +91,7 @@ start_4 : "❖ <b>sᴜᴘᴇʀɢʀᴏᴜᴘ ɴᴇᴇᴅᴇᴅ</b> ❖\n\n● ᴘ
 start_6 : "❖ <b>🥀ᴛʀᴀᴄᴋ ɪɴғᴏʀᴍᴀᴛɪᴏɴ</b> ❖\n\n● <b>📌ᴛɪᴛʟᴇ ➥</b> {0}\n\n● <b>⏳ᴅᴜʀᴀᴛɪᴏɴ ➥</b> {1} ᴍɪɴᴜᴛᴇs\n● <b>👀ᴠɪᴇᴡs ➥</b> <code>{2}</code>\n● <b>⏰ᴩᴜʙʟɪsʜᴇᴅ ᴏɴ ➥</b> {3}\n● <b>ᴄʜᴀɴɴᴇʟ ➥</b> <a href={4}>{5}</a>\n\n● <b>sᴇᴀʀᴄʜ ᴩᴏᴡᴇʀᴇᴅ ʙʏ ➥ {6}</b>"
 start_7 : "ᴛʜᴇ ᴏᴡɴᴇʀ ᴏғ {0}, {1} ᴊᴜsᴛ ᴊᴏɪɴᴇᴅ ʏᴏᴜʀ ᴄʜᴀᴛ."
 start_8 : "ᴛʜᴇ sᴜᴅᴏ ᴜsᴇʀ ᴏғ {0}, {1} ᴊᴜsᴛ ᴊᴏɪɴᴇᴅ ʏᴏᴜʀ ᴄʜᴀᴛ."
-start_9 : "<blockquote><b>⌬ ᴛʜɪs ɪs ᴀᴅᴠᴀɴᴄᴇᴅ ᴍᴜsɪᴄ ᴘʟᴀʏᴇʀ ʙᴏᴛ ғᴏʀ ᴛᴇʟᴇɢʀᴀᴍ ɢʀᴏᴜᴘs + ᴄʜᴀɴɴᴇʟs ᴠᴄ.</blockquote>\n<blockquote>❍ ᴘʟᴀʏ + ᴠᴘʟᴀʏ + ᴄᴘʟᴀʏ ..... ✓\n❍ ʟɪᴠᴇ ʀᴀᴅɪᴏ sᴜᴘᴘᴏʀᴛ ....... ✓\n❍ ᴀᴜᴛᴏ-ᴀᴘᴘʀᴏᴠᴇ ............... ✓\n❍ sᴏɴɢ ᴅᴏᴡ. ᴏʀ sᴛʀᴇᴀᴍ .... ✓\n❍ ʏᴏᴜᴛᴜʙᴇ sᴇᴀʀᴄʜ ᴇᴄᴛ ..... ✓</blockquote>\n<blockquote>🔐 ᴜɴʟᴏᴄᴋ /help ғᴏʀ ᴍᴏʀᴇ.</blockquote>\n<blockquote>❖ ᴘᴏᴡᴇʀᴇᴅ ʙʏ ➥ @net_pro_max</b></blockquote>"
+start_9 : "<blockquote><b>⌬ ᴛʜɪs ɪs ᴀᴅᴠᴀɴᴄᴇᴅ ᴍᴜsɪᴄ ᴘʟᴀʏᴇʀ ʙᴏᴛ ғᴏʀ ᴛᴇʟᴇɢʀᴀᴍ ɢʀᴏᴜᴘs + ᴄʜᴀɴɴᴇʟs ᴠᴄ.</blockquote>\n<blockquote>❍ ᴘʟᴀʏ + ᴠᴘʟᴀʏ + ᴄᴘʟᴀʏ ..... ✓\n❍ ʟɪᴠᴇ ʀᴀᴅɪᴏ sᴜᴘᴘᴏʀᴛ ....... ✓\n❍ ᴀᴜᴛᴏ-ᴀᴘᴘʀᴏᴠᴇ ............... ✓\n❍ sᴏɴɢ ᴅᴏᴡ. ᴏʀ sᴛʀᴇᴀᴍ .... ✓\n❍ ʏᴏᴜᴛᴜʙᴇ sᴇᴀʀᴄʜ ᴇᴄᴛ ...... ✓</blockquote>\n<blockquote>🔐 ᴜɴʟᴏᴄᴋ /help ғᴏʀ ᴍᴏʀᴇ.</blockquote>\n<blockquote>❖ ᴘᴏᴡᴇʀᴇᴅ ʙʏ ➥ @net_pro_max</b></blockquote>"
 
 
 help_1 : "<blockquote><b>❖ ᴄʜᴏᴏsᴇ ᴀ ᴄᴀᴛᴇɢᴏʀʏ ғᴏʀ ʜᴇʟᴘ.</b></blockquote>\n<blockquote><b>● ᴀsᴋ ᴅᴏᴜʙᴛs ➥ <a href={0}>sᴜᴘᴘᴏʀᴛ ᴄʜᴀᴛ</a></b></blockquote>\n<blockquote><b>● ᴜsᴇ ᴄᴏᴍᴍᴀɴᴅs ᴡɪᴛʜ ➥ <code>/</code></b></blockquote>\n\n<blockquote><b>❖ ᴘᴏᴡᴇʀᴇᴅ ʙʏ</b> ➥ @EraVibesXbot</blockquote>"
