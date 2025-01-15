@@ -38,8 +38,8 @@ try:
         # Use custom MongoDB URI from config
         _mongo_async_ = _mongo_client_(config.MONGO_DB_URI)
         _mongo_sync_ = MongoClient(config.MONGO_DB_URI)
-        mongodb = _mongo_async_.Tannu
-        pymongodb = _mongo_sync_.Tannu
+        mongodb = _mongo_async_.APPLE
+        pymongodb = _mongo_sync_.APPLE
 
         LOGGER(__name__).info("✦ Connected to your Mongo Database...❤️")
 
