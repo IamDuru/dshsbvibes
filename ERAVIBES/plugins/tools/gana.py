@@ -22,24 +22,28 @@ async def fetch_song(client, message):
             song = data["data"]["results"][0]
             song_name = song["name"]
             song_url = song["url"]
-            download_url = song.get("downloadUrl")  # Get the download URL
+            download_links = song.get("downloadUrl", [])  # Get the download links (list of dictionaries)
             artist = song["artists"]["primary"][0]["name"]
             
-            # Prepare the reply message (plain text)
+            # Prepare the reply message
             reply = (
-                f"🎶 {song_name}\n"
-                f"👤 Artist: {artist}\n"
-                f"🔗 Listen here: {song_url}\n"
+                f"🎶 **{song_name}**\n"
+                f"👤 **Artist**: {artist}\n"
+                f"🔗 [Listen here]({song_url})\n"
             )
             
-            # Add download link if available
-            if download_url:
-                reply += f"⬇️ Download here: {download_url}"
+            # Add download links if available
+            if download_links:
+                reply += "⬇️ **Download here:**\n"
+                for link in download_links:
+                    quality = link.get("quality", "Unknown Quality")
+                    url = link.get("url", "#")
+                    reply += f"   - [{quality}]({url})\n"
             else:
                 reply += "⬇️ Download link not available."
 
-            # Send the reply as plain text
-            await message.reply_text(reply)
+            # Send the reply with Markdown formatting
+            await message.reply_text(reply, parse_mode="markdown")
         else:
             await message.reply_text("Sorry, I couldn't find any results for that song.")
     else:
