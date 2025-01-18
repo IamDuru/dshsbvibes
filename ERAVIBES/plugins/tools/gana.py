@@ -1,4 +1,6 @@
 from pyrogram import Client, filters
+from pyrogram.enums import ParseMode
+from pyrogram.types import Message
 import requests
 from ERAVIBES import app
 
@@ -6,10 +8,10 @@ from ERAVIBES import app
 API_BASE_URL = "https://codesearchdevapi.vercel.app/download/song?name="
 
 @app.on_message(filters.command("gana"))
-async def fetch_song(client, message):
+async def fetch_song(client, message:Message):
     # Extract the song name from the command
     if len(message.command) < 2:
-        await message.reply_text("Please provide a song name. Example: /gana Yad", parse_mode="html")
+        await message.reply_text("Please provide a song name. Example: /gana Yad")
         return
 
     song_name = " ".join(message.command[1:])
@@ -25,26 +27,26 @@ async def fetch_song(client, message):
             download_links = song.get("downloadUrl", [])  # Get the download links (list of dictionaries)
             artist = song["artists"]["primary"][0]["name"]
             
-            # Prepare the reply message with HTML formatting
+            # Prepare the reply message
             reply = (
-                f"🎶 <b>{song_name}</b>\n"
-                f"👤 <b>Artist</b>: {artist}\n"
-                f"🔗 <a href='{song_url}'>Listen here</a>\n"
+                f"🎶 {song_name}\n"
+                f"👤 Artist: {artist}\n"
+                f"🔗 [Listen here]({song_url})\n"
             )
             
             # Add download links if available
             if download_links:
-                reply += "⬇️ <b>Download here:</b>\n"
+                reply += "⬇️ Download here:\n"
                 for link in download_links:
                     quality = link.get("quality", "Unknown Quality")
                     url = link.get("url", "#")
-                    reply += f"   - <a href='{url}'>{quality}</a>\n"
+                    reply += f"   - [{quality}]({url})\n"
             else:
                 reply += "⬇️ Download link not available."
 
-            # Send the reply with HTML formatting
-            await message.reply_text(reply, parse_mode="html")
+            # Send the reply with Markdown formatting
+            await message.reply_text(reply , parse_mode=ParseMode.MARKDOWN)
         else:
-            await message.reply_text("Sorry, I couldn't find any results for that song.", parse_mode="html")
+            await message.reply_text("Sorry, I couldn't find any results for that song.")
     else:
-        await message.reply_text("An error occurred while fetching the song. Please try again later.", parse_mode="html")
+        await message.reply_text("An error occurred while fetching the song. Please try again later.")
