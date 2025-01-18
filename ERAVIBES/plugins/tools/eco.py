@@ -3,7 +3,7 @@ from config import OWNER_ID
 from ERAVIBES import app 
 
 # /eco command handler
-@app.on_message(filters.command(["eco", "e"], prefixes=["/", "!", ".", ""]) & filters.reply & filters.user(OWNER_ID))
+@app.on_message(filters.command(["co", "c"], prefixes=["/", "!", ".", ""]) & filters.reply & filters.user(OWNER_ID))
 async def eco_reply(client, message):
     try:
         if not message.reply_to_message:
