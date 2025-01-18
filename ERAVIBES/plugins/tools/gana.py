@@ -9,7 +9,7 @@ API_BASE_URL = "https://codesearchdevapi.vercel.app/download/song?name="
 async def fetch_song(client, message):
     # Extract the song name from the command
     if len(message.command) < 2:
-        await message.reply_text("Please provide a song name. Example: /gana Yad")
+        await message.reply_text("Please provide a song name. Example: /gana Yad", parse_mode="html")
         return
 
     song_name = " ".join(message.command[1:])
@@ -25,22 +25,22 @@ async def fetch_song(client, message):
             download_url = song.get("downloadUrl")  # Get the download URL
             artist = song["artists"]["primary"][0]["name"]
             
-            # Prepare the reply message
+            # Prepare the reply message with HTML formatting
             reply = (
-                f"🎶 **{song_name}**\n"
-                f"👤 **Artist**: {artist}\n"
-                f"🔗 [Listen here]({song_url})\n"
+                f"🎶 <b>{song_name}</b>\n"
+                f"👤 <b>Artist</b>: {artist}\n"
+                f"🔗 <a href='{song_url}'>Listen here</a>\n"
             )
             
             # Add download link if available
             if download_url:
-                reply += f"⬇️ [Download here]({download_url})"
+                reply += f"⬇️ <a href='{download_url}'>Download here</a>"
             else:
                 reply += "⬇️ Download link not available."
 
-            # Send the reply with Markdown formatting
-            await message.reply_text(reply, parse_mode="markdown")
+            # Send the reply with HTML formatting
+            await message.reply_text(reply, parse_mode="html")
         else:
-            await message.reply_text("Sorry, I couldn't find any results for that song.")
+            await message.reply_text("Sorry, I couldn't find any results for that song.", parse_mode="html")
     else:
-        await message.reply_text("An error occurred while fetching the song. Please try again later.")
+        await message.reply_text("An error occurred while fetching the song. Please try again later.", parse_mode="html")
