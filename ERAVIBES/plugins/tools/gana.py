@@ -6,11 +6,11 @@ from ERAVIBES import app
 # API base URL
 API_BASE_URL = "https://codesearchdevapi.vercel.app/download/song?name="
 
-@app.on_message(filters.command("gana"))
+@app.on_message(filters.command("song"))
 async def fetch_song(client, message):
     # Extract the song name from the command
     if len(message.command) < 2:
-        await message.reply_text("Please provide a song name. Example: `/gana Lover`", parse_mode="markdown_v2")
+        await message.reply_text("Please provide a song name. Example: `/song Lover`", parse_mode=ParseMode.MARKDOWN)
         return
 
     song_name = " ".join(message.command[1:])
