@@ -5,13 +5,11 @@ from ERAVIBES import app
 # API base URL
 API_BASE_URL = "https://codesearchdevapi.vercel.app/download/song?name="
 
-
-
 @app.on_message(filters.command("gana"))
 async def fetch_song(client, message):
     # Extract the song name from the command
     if len(message.command) < 2:
-        await message.reply_text("Please provide a song name. Example: /gana Lover", parse_mode="markdown")
+        await message.reply_text("Please provide a song name. Example: /gana Lover", parse_mode="markdown_v2")
         return
 
     song_name = " ".join(message.command[1:])
@@ -30,7 +28,8 @@ async def fetch_song(client, message):
                 f"👤 *Artist*: {artist}\n"
                 f"🔗 [Listen here]({song_url})"
             )
-            await message.reply_text(reply, parse_mode="markdown")
+            # Use "markdown_v2" for compatibility with the updated library
+            await message.reply_text(reply, parse_mode="markdown_v2")
         else:
             await message.reply_text("Sorry, I couldn't find any results for that song.")
     else:
