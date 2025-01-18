@@ -9,7 +9,7 @@ API_BASE_URL = "https://codesearchdevapi.vercel.app/download/song?name="
 async def fetch_song(client, message):
     # Extract the song name from the command
     if len(message.command) < 2:
-        await message.reply_text("Please provide a song name. Example: /gana Lover", parse_mode="markdownv2")
+        await message.reply_text("Please provide a song name. Example: /gana Lover", parse_mode="html")
         return
 
     song_name = " ".join(message.command[1:])
@@ -24,13 +24,13 @@ async def fetch_song(client, message):
             artist = song["artists"]["primary"][0]["name"]
             
             reply = (
-                f"🎶 *{song_name}*\n"
-                f"👤 *Artist*: {artist}\n"
-                f"🔗 [Listen here]({song_url})"
+                f"🎶 <b>{song_name}</b>\n"
+                f"👤 <b>Artist</b>: {artist}\n"
+                f"🔗 <a href='{song_url}'>Listen here</a>"
             )
-            # Using "markdownv2" as the parse mode
-            await message.reply_text(reply, parse_mode="markdownv2")
+            # Using "html" as the parse mode
+            await message.reply_text(reply, parse_mode="html")
         else:
-            await message.reply_text("Sorry, I couldn't find any results for that song.", parse_mode="markdownv2")
+            await message.reply_text("Sorry, I couldn't find any results for that song.", parse_mode="html")
     else:
-        await message.reply_text("An error occurred while fetching the song. Please try again later.", parse_mode="markdownv2")
+        await message.reply_text("An error occurred while fetching the song. Please try again later.", parse_mode="html")
