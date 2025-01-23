@@ -5,7 +5,7 @@ import requests
 from ERAVIBES import app
 
 # API base URL
-API_BASE_URL = "https://codesearchdevapi.vercel.app/download/song?name="
+API_BASE_URL = "https://song.codesearch.workers.dev/?name="
 
 @app.on_message(filters.command("gana"))
 async def fetch_song(client, message:Message):
