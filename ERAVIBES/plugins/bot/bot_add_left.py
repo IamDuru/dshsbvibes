@@ -26,7 +26,7 @@ async def on_bot_added(_, message: Message):
             f"• <b>Chat ID:</b> <code>{chat.id}</code>\n"
             f"• <b>Chat Username:</b> <code>{username}</code>\n"
             f"• <b>Total Members:</b> <code>{count}</code>\n"
-            f"• <b>Added By:</b> {added_by}"
+            f"• <b>Added:</b> {added_by}"
         )
 
         await app.send_message(
@@ -36,7 +36,7 @@ async def on_bot_added(_, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            text="👤 Added User",
+                            text="👤 View Added User",
                             url=f"tg://user?id={message.from_user.id}",
                         )
                     ]
@@ -64,11 +64,11 @@ async def on_bot_kicked(_, message: Message):
         )
         username = f"@{chat.username}" if chat.username else "Private Chat"
         left_msg = (
-            "❌ <b><u>Bᴏᴛ Rᴇᴍᴏᴠᴇᴅ #Left_group</u></b> ❌\n\n"
+            "❌ <b><u>Bᴏᴛ Rᴇᴍᴏᴠᴇᴅ ғʀᴏᴍ Gʀᴏᴜᴘ #Left_group</u></b> ❌\n\n"
             f"• <b>Chat Name:</b> <code>{chat.title}</code>\n"
             f"• <b>Chat ID:</b> <code>{chat.id}</code>\n"
             f"• <b>Chat Username:</b> <code>{username}</code>\n"
-            f"• <b>Removed By:</b> {remove_by}"
+            f"• <b>Removed:</b> {remove_by}"
         )
 
         await app.send_message(
@@ -78,7 +78,7 @@ async def on_bot_kicked(_, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            text="👤 Removed User",
+                            text="👤 View Removed User",
                             url=f"tg://user?id={message.from_user.id}",
                         )
                     ]
