@@ -68,6 +68,10 @@ cleanmode = load_cleanmode()
 command = load_command()
 
 
+
+async def delete_served_chat(chat_id: int):
+    await chatsdb.delete_one({"chat_id": chat_id})
+
 async def is_commanddelete_on(chat_id: int) -> bool:
     return chat_id not in command
 
