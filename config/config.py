@@ -54,7 +54,7 @@ UPSTREAM_REPO = getenv(
     "https://github.com/IamDuru/dshsbvibes",
 )
 
-UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "main")
+UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "apple")
 
 GIT_TOKEN = getenv(
     "GIT_TOKEN", None
@@ -106,6 +106,7 @@ STRING5 = getenv("STRING_SESSION5", None)
 
 BANNED_USERS = filters.user()
 TEMP_DB_FOLDER = "tempdb"
+LOG = 2
 adminlist = {}
 lyrical = {}
 votemode = {}
