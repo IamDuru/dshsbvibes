@@ -14,19 +14,19 @@ async def on_bot_added(_, message: Message):
     chat = message.chat
     if any(member.id == app.id for member in message.new_chat_members):
         count = await app.get_chat_members_count(chat.id)
-        username = f"@{chat.username}" if chat.username else "ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ"
+        username = f"@{chat.username}" if chat.username else "Private Chat"
         added_by = (
             f'<a href="tg://user?id={message.from_user.id}">{message.from_user.first_name}</a>'
             if message.from_user
             else "Unknown User"
         )
         msg = (
-            "<b>Music bot added in new Group #New_Group</b>\n\n"
-            f"<b>Chat Name:</b> {chat.title}\n"
-            f"<b>Chat Id:</b> {chat.id}\n"
-            f"<b>Chat Username:</b> {username}\n"
-            f"<b>Chat Member Count:</b> {count}\n"
-            f"<b>Added By:</b> {added_by}"
+            "🎉 <b><u>Mᴜsɪᴄ Bᴏᴛ Aᴅᴅᴇᴅ ɪɴ #New_Group</u></b> 🎉\n\n"
+            f"• <b>Chat Name:</b> <code>{chat.title}</code>\n"
+            f"• <b>Chat ID:</b> <code>{chat.id}</code>\n"
+            f"• <b>Chat Username:</b> <code>{username}</code>\n"
+            f"• <b>Total Members:</b> <code>{count}</code>\n"
+            f"• <b>Added By:</b> {added_by}"
         )
 
         await app.send_message(
@@ -36,8 +36,8 @@ async def on_bot_added(_, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            text=f"Added by: {message.from_user.first_name}",
-                            user_id=message.from_user.id,
+                            text="👤 Added User",
+                            url=f"tg://user?id={message.from_user.id}",
                         )
                     ]
                 ]
@@ -60,15 +60,15 @@ async def on_bot_kicked(_, message: Message):
         remove_by = (
             f'<a href="tg://user?id={message.from_user.id}">{message.from_user.first_name}</a>'
             if message.from_user
-            else "𝐔ɴᴋɴᴏᴡɴ 𝐔sᴇʀ"
+            else "Unknown User"
         )
-        username = f"@{chat.username}" if chat.username else "ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ"
+        username = f"@{chat.username}" if chat.username else "Private Chat"
         left_msg = (
-            f"<b>Bot was Removed in {chat.title} #Left_group</b>\n"
-            f"<b>Chat Name:</b> {chat.title}\n"
-            f"<b>Chat Id:</b> {chat.id}\n"
-            f"<b>Chat Username:</b> {username}\n"
-            f"<b>Removed By:</b> {remove_by}"
+            "❌ <b><u>Bᴏᴛ Rᴇᴍᴏᴠᴇᴅ #Left_group</u></b> ❌\n\n"
+            f"• <b>Chat Name:</b> <code>{chat.title}</code>\n"
+            f"• <b>Chat ID:</b> <code>{chat.id}</code>\n"
+            f"• <b>Chat Username:</b> <code>{username}</code>\n"
+            f"• <b>Removed By:</b> {remove_by}"
         )
 
         await app.send_message(
@@ -78,8 +78,8 @@ async def on_bot_kicked(_, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            text=f"Removed By: {message.from_user.first_name}",
-                            user_id=message.from_user.id,
+                            text="👤 Removed User",
+                            url=f"tg://user?id={message.from_user.id}",
                         )
                     ]
                 ]
