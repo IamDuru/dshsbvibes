@@ -1,3 +1,5 @@
+feedparser
+#-------------#
 deep_translator
 bing_image_downloader
 openai
