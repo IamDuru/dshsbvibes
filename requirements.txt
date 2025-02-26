@@ -25,7 +25,8 @@ pytube
 pykeyboard
 unidecode
 pyromod
-ntgcalls==1.1.2
+py-tgcalls==2.0.6
+ntgcalls==1.2.3
 python-dotenv
 pyyaml
 requests
@@ -59,7 +60,6 @@ pytz
 pydub
 apscheduler
 gtts
-py-tgcalls==0.9.7
 lexica-api==1.5.7
 git+https://github.com/KurimuzonAkuma/pyrogram@dev
 git+https://github.com/yt-dlp/yt-dlp
