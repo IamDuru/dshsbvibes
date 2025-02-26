@@ -25,7 +25,7 @@ from pytgcalls.types.stream import StreamAudioEnded
 
 import config
 from strings import get_string
-from ERAVIBES import LOGGER, Platform, app
+from ERAVIBES import LOGGER, YouTube, app
 from ERAVIBES.misc import db
 from ERAVIBES.utils.database import (
     add_active_chat,
