@@ -43,7 +43,7 @@ async def auto_leave():
 
 asyncio.create_task(auto_leave())
 
-
+'''
 async def auto_end():
     while not await asyncio.sleep(5):
         ender = await is_autoend()
@@ -72,3 +72,5 @@ async def auto_end():
 
 
 asyncio.create_task(auto_end())
+
+'''
