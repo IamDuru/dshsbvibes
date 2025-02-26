@@ -1,4 +1,5 @@
 feedparser
+ytdlx
 #-------------#
 deep_translator
 bing_image_downloader
