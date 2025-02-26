@@ -44,7 +44,7 @@ async def auto_leave():
 asyncio.create_task(auto_leave())
 
 
-
+'''
 # Dictionary to track user activity timestamps
 user_activity = {}
 
@@ -85,3 +85,5 @@ async def auto_end():
                     del autoend[chat_id]  # Remove chat from autoend dictionary
 
 asyncio.create_task(auto_end())
+
+'''
