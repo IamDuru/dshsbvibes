@@ -44,7 +44,7 @@ async def auto_leave():
 asyncio.create_task(auto_leave())
 
 
-'''
+
 # Dictionary to track user activity timestamps
 user_activity = {}
 
@@ -58,7 +58,7 @@ async def is_active_chat(chat_id):
         return False
     last_activity = user_activity[chat_id]
     # Consider the chat active if the last activity was within the last 1 minutes
-    return datetime.now() - last_activity <= timedelta(minutes=1)
+    return datetime.now() - last_activity <= timedelta(minutes=99999)
 
 async def auto_end():
     while True:
@@ -85,5 +85,3 @@ async def auto_end():
                     del autoend[chat_id]  # Remove chat from autoend dictionary
 
 asyncio.create_task(auto_end())
-
-'''
