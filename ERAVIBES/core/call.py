@@ -24,17 +24,13 @@ from pytgcalls.types import (
 from pytgcalls.types.stream import StreamAudioEnded
 
 import config
-from strings import get_string
 from ERAVIBES import LOGGER, YouTube, app
 from ERAVIBES.misc import db
 from ERAVIBES.utils.database import (
     add_active_chat,
     add_active_video_chat,
-    get_assistant,
-    get_audio_bitrate,
     get_lang,
     get_loop,
-    get_video_bitrate,
     group_assistant,
     is_autoend,
     music_on,
@@ -44,14 +40,14 @@ from ERAVIBES.utils.database import (
 )
 from ERAVIBES.utils.exceptions import AssistantErr
 from ERAVIBES.utils.formatters import check_duration, seconds_to_min, speed_converter
-from ERAVIBES.utils.inline.play import stream_markup, telegram_markup
+from ERAVIBES.utils.inline.play import stream_markup
 from ERAVIBES.utils.stream.autoclear import auto_clean
-from ERAVIBES.utils.thumbnails import gen_thumb
-
+from ERAVIBES.utils.thumbnails import get_thumb
+from strings import get_string
 
 autoend = {}
 counter = {}
-
+message_sent = {}
 
 async def _clear_(chat_id):
     db[chat_id] = []
