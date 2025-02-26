@@ -43,34 +43,45 @@ async def auto_leave():
 
 asyncio.create_task(auto_leave())
 
-'''
+
+
+# Dictionary to track user activity timestamps
+user_activity = {}
+
+async def update_user_activity(chat_id):
+    """Update the last activity timestamp for a chat."""
+    user_activity[chat_id] = datetime.now()
+
+async def is_active_chat(chat_id):
+    """Check if the chat is still active based on user activity."""
+    if chat_id not in user_activity:
+        return False
+    last_activity = user_activity[chat_id]
+    # Consider the chat active if the last activity was within the last 1 minutes
+    return datetime.now() - last_activity <= timedelta(minutes=1)
+
 async def auto_end():
-    while not await asyncio.sleep(5):
-        ender = await is_autoend()
-        if not ender:
-            continue
-        for chat_id in autoend:
+    while True:
+        await asyncio.sleep(5)  # Check every 5 seconds
+        for chat_id in list(autoend.keys()):  # Use list to avoid RuntimeError: dictionary changed size during iteration
             timer = autoend.get(chat_id)
             if not timer:
                 continue
             if datetime.now() > timer:
                 if not await is_active_chat(chat_id):
-                    autoend[chat_id] = {}
-                    continue
-                autoend[chat_id] = {}
-                try:
-                    await ERA.stop_stream(chat_id)
-                except:
-                    continue
-                try:
-                    await app.send_message(
-                        chat_id,
-                        "❖ ʙᴏᴛ ᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ ʟᴇғᴛ ᴠɪᴅᴇᴏᴄʜᴀᴛ ʙᴇᴄᴀᴜsᴇ ɴᴏ ᴏɴᴇ ᴡᴀs ʟɪsᴛᴇɴɪɴɢ ᴏɴ ᴠɪᴅᴇᴏᴄʜᴀᴛ.",
-                    )
-                except:
-                    continue
-
+                    try:
+                        await ERA.stop_stream(chat_id)
+                    except Exception as e:
+                        print(f"Error stopping stream in chat {chat_id}: {e}")
+                        continue
+                    try:
+                        await app.send_message(
+                            chat_id,
+                            "❖ ʙᴏᴛ ᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ ʟᴇғᴛ ᴠɪᴅᴇᴏᴄʜᴀᴛ ʙᴇᴄᴀᴜsᴇ ɴᴏ ᴏɴᴇ ᴡᴀs ʟɪsᴛᴇɴɪɴɢ ᴏɴ ᴠɪᴅᴇᴏᴄʜᴀᴛ.",
+                        )
+                    except Exception as e:
+                        print(f"Error sending message to chat {chat_id}: {e}")
+                        continue
+                    del autoend[chat_id]  # Remove chat from autoend dictionary
 
 asyncio.create_task(auto_end())
-
-'''
