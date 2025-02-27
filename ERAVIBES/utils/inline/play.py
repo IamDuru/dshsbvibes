@@ -47,14 +47,8 @@ def stream_markup_timer(_, chat_id, played, dur):
         # Row 3: Advanced controls
         [
             InlineKeyboardButton("˹ ᴜᴘᴅᴧᴛᴇ ˼", url="https://t.me/net_pro_max"),
-            InlineKeyboardButton(text="🔀 shuffle", callback_data=f"ADMIN Shuffle|{chat_id}"),
-            InlineKeyboardButton("˹ sᴜᴘᴘᴏꝛᴛ  ˼", url="https://t.me/+ifTJa6EmP4A1MTA9")            
-        ],
-        # Row 4: Additional options
-        [
-            InlineKeyboardButton(text="⏭ next", callback_data=f"ADMIN Next|{chat_id}"),
             InlineKeyboardButton(text=_["CLOSE_BUTTON"].lower(), callback_data="close"),
-            InlineKeyboardButton(text="🔁 loop", callback_data=f"ADMIN Loop|{chat_id}")
+            InlineKeyboardButton("˹ sᴜᴘᴘᴏꝛᴛ  ˼", url="https://t.me/+ifTJa6EmP4A1MTA9")            
         ]
     ]
     return buttons
