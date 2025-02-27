@@ -1,4 +1,3 @@
-import asyncio
 from pyrogram import filters
 from pyrogram.types import Message
 
@@ -17,11 +16,6 @@ async def pause_admin(cli, message: Message, _, chat_id):
         return await message.reply_text(_["admin_1"])
     await music_off(chat_id)
     await ERA.pause_stream(chat_id)
-    r = await message.reply_text(
+    await message.reply_text(
         _["admin_2"].format(message.from_user.mention), reply_markup=close_markup(_)
     )
-    try:
-        await asyncio.sleep(5)
-        await r.delete()
-    except Exception as e:
-        print("Error deleting message:", e)
