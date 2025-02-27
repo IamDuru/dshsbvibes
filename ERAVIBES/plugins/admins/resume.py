@@ -23,3 +23,5 @@ async def resume_com(cli, message: Message, _, chat_id):
     try:
         await asyncio.sleep(5)
         await r.delete()
+    except Exception as e:
+        print("Error deleting message:", e)
