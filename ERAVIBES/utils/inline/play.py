@@ -55,8 +55,9 @@ def stream_markup_timer(_, chat_id, played, dur):
         ],
         # Row 4: Additional options
         [
-            InlineKeyboardButton(text="📜 queue", callback_data=f"ADMIN Queue|{chat_id}"),
-            InlineKeyboardButton(text=_["CLOSE_BUTTON"].lower(), callback_data="close")
+            InlineKeyboardButton("˹ ᴜᴘᴅᴧᴛᴇ ˼", url="https://t.me/net_pro_max"),
+            InlineKeyboardButton(text=_["CLOSE_BUTTON"].lower(), callback_data="close"),
+            InlineKeyboardButton("˹ sᴜᴘᴘᴏꝛᴛ  ˼", url="https://t.me/+ifTJa6EmP4A1MTA9")
         ]
     ]
     return buttons
