@@ -4,7 +4,32 @@ from pyrogram.types import InlineKeyboardButton
 from ERAVIBES.utils.formatters import time_to_seconds
 
 
-def get_progress_bar(percentage):
+def track_markup(_, videoid, user_id, channel, fplay):
+    buttons = [
+        [
+            InlineKeyboardButton(
+                text=_["P_B_1"],
+                callback_data=f"MusicStream {videoid}|{user_id}|a|{channel}|{fplay}",
+            ),
+            InlineKeyboardButton(
+                text=_["P_B_2"],
+                callback_data=f"MusicStream {videoid}|{user_id}|v|{channel}|{fplay}",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text=_["CLOSE_BUTTON"],
+                callback_data=f"forceclose {videoid}|{user_id}",
+            )
+        ],
+    ]
+    return buttons
+
+
+def stream_markup_timer(_, chat_id, played, dur):
+    played_sec = time_to_seconds(played)
+    duration_sec = time_to_seconds(dur)
+    percentage = (played_sec / duration_sec) * 100
     umm = math.floor(percentage)
 
     if 0 < umm <= 10:
@@ -29,12 +54,6 @@ def get_progress_bar(percentage):
         return "━━━━━━━━━⚪"
     else:
         return "───────────"
-        
-def stream_markup_timer(_, videoid, chat_id, played, dur):
-    played_sec = time_to_seconds(played)
-    duration_sec = time_to_seconds(dur)
-    percentage = (played_sec / duration_sec) * 100
-    bar = get_progress_bar(percentage)
     buttons = [
         [
             InlineKeyboardButton(
@@ -50,8 +69,7 @@ def stream_markup_timer(_, videoid, chat_id, played, dur):
     return buttons
 
 
-
-def stream_markup(_, chat_id):
+def stream_markup(_, videoid, chat_id):
     buttons = [
           [
             InlineKeyboardButton(text="❚❚", callback_data=f"ADMIN Pause|{chat_id}"),
@@ -61,26 +79,6 @@ def stream_markup(_, chat_id):
     return buttons
 
 
-def track_markup(_, videoid, user_id, channel, fplay):
-    buttons = [
-        [
-            InlineKeyboardButton(
-                text=_["P_B_1"],
-                callback_data=f"MusicStream {videoid}|{user_id}|a|{channel}|{fplay}",
-            ),
-            InlineKeyboardButton(
-                text=_["P_B_2"],
-                callback_data=f"MusicStream {videoid}|{user_id}|v|{channel}|{fplay}",
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                text=_["CLOSE_BUTTON"],
-                callback_data=f"forceclose {videoid}|{user_id}",
-            )
-        ],
-    ]
-    return buttons
 
 
 def playlist_markup(_, videoid, user_id, ptype, channel, fplay):
