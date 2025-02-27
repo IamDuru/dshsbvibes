@@ -8,44 +8,59 @@ def stream_markup_timer(_, chat_id, played, dur):
     played_sec = time_to_seconds(played)
     duration_sec = time_to_seconds(dur)
     percentage = (played_sec / duration_sec) * 100
+    umm = math.floor(percentage)
 
-    # 20 slots ke progress bar ke liye calculation
-    total_slots = 20
-    filled_slots = int((percentage / 100) * total_slots)
-    
-    # Stylish emojis: green circle for filled aur white square for empty part
-    filled_emoji = "🟢"
-    empty_emoji = "▫️"
-    bar = filled_emoji * filled_slots + empty_emoji * (total_slots - filled_slots)
-    
-    # Professional layout ke liye multiple control buttons
+    if 0 < umm <= 10:
+        bar = "⚪─────────"
+    elif 10 < umm <= 20:
+        bar = "━⚪────────"
+    elif 20 < umm <= 30:
+        bar = "━━⚪───────"
+    elif 30 < umm <= 40:
+        bar = "━━━⚪──────"
+    elif 40 < umm <= 50:
+        bar = "━━━━⚪─────"
+    elif 50 < umm <= 60:
+        bar = "━━━━━⚪────"
+    elif 60 < umm <= 70:
+        bar = "━━━━━━⚪───"
+    elif 70 < umm <= 80:
+        bar = "━━━━━━━⚪──"
+    elif 80 < umm <= 90:
+        bar = "━━━━━━━━⚪─"
+    elif 90 < umm <= 100:
+        bar = "━━━━━━━━━⚪"
+    else:
+        bar = "───────────"
+
     buttons = [
         # Row 1: Progress bar with timing
         [
             InlineKeyboardButton(
-                text=f"⏱ {played}   {bar}   {dur}",
+                text=f"⏱ {played.lower()}   {bar}   {dur.lower()}",
                 callback_data="GetTimer"
             )
         ],
         # Row 2: Basic playback controls
         [
-            InlineKeyboardButton(text="⏸ Pause", callback_data=f"ADMIN Pause|{chat_id}"),
-            InlineKeyboardButton(text="⏹ Stop", callback_data=f"ADMIN Stop|{chat_id}"),
-            InlineKeyboardButton(text="▶ Play", callback_data=f"ADMIN Resume|{chat_id}")
+            InlineKeyboardButton(text="⏸ pause", callback_data=f"ADMIN Pause|{chat_id}"),
+            InlineKeyboardButton(text="⏹ stop", callback_data=f"ADMIN Stop|{chat_id}"),
+            InlineKeyboardButton(text="▶ play", callback_data=f"ADMIN Resume|{chat_id}")
         ],
         # Row 3: Advanced controls
         [
-            InlineKeyboardButton(text="⏭ Next", callback_data=f"ADMIN Next|{chat_id}"),
-            InlineKeyboardButton(text="🔀 Shuffle", callback_data=f"ADMIN Shuffle|{chat_id}"),
-            InlineKeyboardButton(text="🔁 Loop", callback_data=f"ADMIN Loop|{chat_id}")
+            InlineKeyboardButton(text="⏭ next", callback_data=f"ADMIN Next|{chat_id}"),
+            InlineKeyboardButton(text="🔀 shuffle", callback_data=f"ADMIN Shuffle|{chat_id}"),
+            InlineKeyboardButton(text="🔁 loop", callback_data=f"ADMIN Loop|{chat_id}")
         ],
         # Row 4: Additional options
         [
-            InlineKeyboardButton(text="📜 Queue", callback_data=f"ADMIN Queue|{chat_id}"),
-            InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close")
+            InlineKeyboardButton(text="📜 queue", callback_data=f"ADMIN Queue|{chat_id}"),
+            InlineKeyboardButton(text=_["CLOSE_BUTTON"].lower(), callback_data="close")
         ]
     ]
     return buttons
+
 
 
 
