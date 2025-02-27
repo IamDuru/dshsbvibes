@@ -34,7 +34,7 @@ def stream_markup_timer(_, chat_id, played, dur):
         # Row 1: Progress bar with timing
         [
             InlineKeyboardButton(
-                text=f"⏱ {played.lower()}  {bar}  {dur.lower()}",
+                text=f"{played.lower()}  {bar}  {dur.lower()}",
                 callback_data="GetTimer"
             )
         ],
@@ -46,15 +46,15 @@ def stream_markup_timer(_, chat_id, played, dur):
         ],
         # Row 3: Advanced controls
         [
-            InlineKeyboardButton(text="⏭ next", callback_data=f"ADMIN Next|{chat_id}"),
+            InlineKeyboardButton("˹ ᴜᴘᴅᴧᴛᴇ ˼", url="https://t.me/net_pro_max"),
             InlineKeyboardButton(text="🔀 shuffle", callback_data=f"ADMIN Shuffle|{chat_id}"),
-            InlineKeyboardButton(text="🔁 loop", callback_data=f"ADMIN Loop|{chat_id}")
+            InlineKeyboardButton("˹ sᴜᴘᴘᴏꝛᴛ  ˼", url="https://t.me/+ifTJa6EmP4A1MTA9")            
         ],
         # Row 4: Additional options
         [
-            InlineKeyboardButton("˹ ᴜᴘᴅᴧᴛᴇ ˼", url="https://t.me/net_pro_max"),
+            InlineKeyboardButton(text="⏭ next", callback_data=f"ADMIN Next|{chat_id}"),
             InlineKeyboardButton(text=_["CLOSE_BUTTON"].lower(), callback_data="close"),
-            InlineKeyboardButton("˹ sᴜᴘᴘᴏꝛᴛ  ˼", url="https://t.me/+ifTJa6EmP4A1MTA9")
+            InlineKeyboardButton(text="🔁 loop", callback_data=f"ADMIN Loop|{chat_id}")
         ]
     ]
     return buttons
