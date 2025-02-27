@@ -20,5 +20,6 @@ async def pause_admin(cli, message: Message, _, chat_id):
     r = await message.reply_text(
         _["admin_2"].format(message.from_user.mention), reply_markup=close_markup(_)
     )
-    await asyncio.sleep(3)
-    await r.delete()
+    try:
+        await asyncio.sleep(5)
+        await r.delete()
