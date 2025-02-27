@@ -9,33 +9,32 @@ def stream_markup_timer(_, chat_id, played, dur):
     duration_sec = time_to_seconds(dur)
     percentage = (played_sec / duration_sec) * 100
     umm = math.floor(percentage)
-
     if 0 < umm <= 10:
-        bar = "⚪────────"
-    elif 10 < umm <= 20:
-        bar = "━⚪───────"
-    elif 20 < umm <= 30:
-        bar = "━━⚪──────"
-    elif 30 < umm <= 40:
-        bar = "━━━⚪─────"
-    elif 40 < umm <= 50:
-        bar = "━━━━⚪────"
-    elif 50 < umm <= 60:
-        bar = "━━━━━⚪───"
-    elif 60 < umm <= 70:
-        bar = "━━━━━━⚪──"
-    elif 70 < umm <= 80:
-        bar = "━━━━━━━⚪─"
-    elif 80 < umm <= 100:
-        bar = "━━━━━━━━⚪"
+        bar = "▰▱▱▱▱▱▱▱▱▱"
+    elif 10 < umm < 20:
+        bar = "▰▰▱▱▱▱▱▱▱▱"
+    elif 20 <= umm < 30:
+        bar = "▰▰▰▱▱▱▱▱▱▱"
+    elif 30 <= umm < 40:
+        bar = "▰▰▰▰▱▱▱▱▱▱"
+    elif 40 <= umm < 50:
+        bar = "▰▰▰▰▰▱▱▱▱▱"
+    elif 50 <= umm < 60:
+        bar = "▰▰▰▰▰▰▱▱▱▱"
+    elif 60 <= umm < 70:
+        bar = "▰▰▰▰▰▰▰▱▱▱"
+    elif 70 <= umm < 80:
+        bar = "▰▰▰▰▰▰▰▰▱▱"
+    elif 80 <= umm < 95:
+        bar = "▰▰▰▰▰▰▰▰▰▱"
     else:
-        bar = "──────────"
+        bar = "▰▰▰▰▰▰▰▰▰▰"
 
     buttons = [
         # Row 1: Progress bar with timing
         [
             InlineKeyboardButton(
-                text=f"⏱ {played.lower()}   {bar}   {dur.lower()}",
+                text=f"⏱ {played.lower()}  {bar}  {dur.lower()}",
                 callback_data="GetTimer"
             )
         ],
