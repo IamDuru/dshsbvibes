@@ -38,17 +38,17 @@ def stream_markup_timer(_, chat_id, played, dur):
                 callback_data="GetTimer"
             )
         ],
-        # Row 2: Basic playback controls
         [
             InlineKeyboardButton(text="⏸ pause", callback_data=f"ADMIN Pause|{chat_id}"),
             InlineKeyboardButton(text="⏹ stop", callback_data=f"ADMIN Stop|{chat_id}"),
             InlineKeyboardButton(text="▶ play", callback_data=f"ADMIN Resume|{chat_id}")
         ],
-        # Row 3: Advanced controls
         [
             InlineKeyboardButton("˹ ᴜᴘᴅᴧᴛᴇ ˼", url="https://t.me/net_pro_max"),
-            InlineKeyboardButton(text=_["CLOSE_BUTTON"].lower(), callback_data="close"),
             InlineKeyboardButton("˹ sᴜᴘᴘᴏꝛᴛ  ˼", url="https://t.me/+ifTJa6EmP4A1MTA9")            
+        ],
+        [
+            InlineKeyboardButton(text=_["CLOSE_BUTTON"].lower(), callback_data="close")
         ]
     ]
     return buttons
@@ -58,11 +58,19 @@ def stream_markup_timer(_, chat_id, played, dur):
 
 def stream_markup(_, chat_id):
     buttons = [
-          [
-            InlineKeyboardButton(text="❚❚", callback_data=f"ADMIN Pause|{chat_id}"),
-            InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close"),
-            InlineKeyboardButton(text="ᐅ", callback_data=f"ADMIN Resume|{chat_id}")],
-   ]
+        [
+            InlineKeyboardButton(text="⏸ pause", callback_data=f"ADMIN Pause|{chat_id}"),
+            InlineKeyboardButton(text="⏹ stop", callback_data=f"ADMIN Stop|{chat_id}"),
+            InlineKeyboardButton(text="▶ play", callback_data=f"ADMIN Resume|{chat_id}")
+        ],
+        [
+            InlineKeyboardButton("˹ ᴜᴘᴅᴧᴛᴇ ˼", url="https://t.me/net_pro_max"),
+            InlineKeyboardButton("˹ sᴜᴘᴘᴏꝛᴛ  ˼", url="https://t.me/+ifTJa6EmP4A1MTA9")            
+        ],
+        [
+            InlineKeyboardButton(text=_["CLOSE_BUTTON"].lower(), callback_data="close")
+        ]
+    ]
     return buttons
 
 
