@@ -11,27 +11,25 @@ def stream_markup_timer(_, chat_id, played, dur):
     umm = math.floor(percentage)
 
     if 0 < umm <= 10:
-        bar = "⚪─────────"
+        bar = "⚪────────"
     elif 10 < umm <= 20:
-        bar = "━⚪────────"
+        bar = "━⚪───────"
     elif 20 < umm <= 30:
-        bar = "━━⚪───────"
+        bar = "━━⚪──────"
     elif 30 < umm <= 40:
-        bar = "━━━⚪──────"
+        bar = "━━━⚪─────"
     elif 40 < umm <= 50:
-        bar = "━━━━⚪─────"
+        bar = "━━━━⚪────"
     elif 50 < umm <= 60:
-        bar = "━━━━━⚪────"
+        bar = "━━━━━⚪───"
     elif 60 < umm <= 70:
-        bar = "━━━━━━⚪───"
+        bar = "━━━━━━⚪──"
     elif 70 < umm <= 80:
-        bar = "━━━━━━━⚪──"
-    elif 80 < umm <= 90:
-        bar = "━━━━━━━━⚪─"
-    elif 90 < umm <= 100:
-        bar = "━━━━━━━━━⚪"
+        bar = "━━━━━━━⚪─"
+    elif 80 < umm <= 100:
+        bar = "━━━━━━━━⚪"
     else:
-        bar = "───────────"
+        bar = "──────────"
 
     buttons = [
         # Row 1: Progress bar with timing
