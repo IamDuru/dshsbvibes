@@ -1,4 +1,3 @@
-import asyncio
 from pyrogram import filters
 from pyrogram.types import Message
 
@@ -17,11 +16,6 @@ async def resume_com(cli, message: Message, _, chat_id):
         return await message.reply_text(_["admin_3"])
     await music_on(chat_id)
     await ERA.resume_stream(chat_id)
-    r = await message.reply_text(
+    await message.reply_text(
         _["admin_4"].format(message.from_user.mention), reply_markup=close_markup(_)
     )
-    try:
-        await asyncio.sleep(5)
-        await r.delete()
-    except Exception as e:
-        print("Error deleting message:", e)
