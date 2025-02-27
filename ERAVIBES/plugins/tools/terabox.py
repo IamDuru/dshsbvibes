@@ -1,4 +1,4 @@
-ev import asyncio
+import asyncio
 import requests
 from bs4 import BeautifulSoup
 from ERAVIBES import app
