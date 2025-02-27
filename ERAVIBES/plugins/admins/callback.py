@@ -136,25 +136,40 @@ async def del_back_playlist(client, CallbackQuery, _):
         await CallbackQuery.answer()
         await music_off(chat_id)
         await ERA.pause_stream(chat_id)
-        await CallbackQuery.message.reply_text(
+        r = await CallbackQuery.message.reply_text(
             _["admin_2"].format(mention), reply_markup=close_markup(_)
         )
+        try:
+            await asyncio.sleep(5)
+            await r.delete()
+        except Exception as e:
+            print("Error deleting message:", e)
     elif command == "Resume":
         if await is_music_playing(chat_id):
             return await CallbackQuery.answer(_["admin_3"], show_alert=True)
         await CallbackQuery.answer()
         await music_on(chat_id)
         await ERA.resume_stream(chat_id)
-        await CallbackQuery.message.reply_text(
+        r = await CallbackQuery.message.reply_text(
             _["admin_4"].format(mention), reply_markup=close_markup(_)
         )
+        try:
+            await asyncio.sleep(5)
+            await r.delete()
+        except Exception as e:
+            print("Error deleting message:", e)
     elif command == "Stop" or command == "End":
         await CallbackQuery.answer()
         await ERA.stop_stream(chat_id)
         await set_loop(chat_id, 0)
-        await CallbackQuery.message.reply_text(
+        r = await CallbackQuery.message.reply_text(
             _["admin_5"].format(mention), reply_markup=close_markup(_)
         )
+        try:
+            await asyncio.sleep(5)
+            await r.delete()
+        except Exception as e:
+            print("Error deleting message:", e)
         await CallbackQuery.message.delete()
     elif command == "Skip" or command == "Replay":
         check = db.get(chat_id)
