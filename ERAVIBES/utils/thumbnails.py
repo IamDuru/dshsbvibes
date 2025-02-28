@@ -1,4 +1,10 @@
-import os, re, random, math, aiofiles, aiohttp, asyncio
+import os
+import re
+import random
+import math
+import aiofiles
+import aiohttp
+import asyncio
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 from youtubesearchpython.__future__ import VideosSearch
 from ERAVIBES import app
@@ -32,7 +38,7 @@ def truncate_text(text, limit=30):
 def generate_light_dark_color():
     return (random.randint(100, 200), random.randint(100, 200), random.randint(100, 200))
 
-def create_rgb_neon_circle(image, center, radius, border_width, steps=15):  # steps reduced for speed
+def create_rgb_neon_circle(image, center, radius, border_width, steps=15):
     draw = ImageDraw.Draw(image)
     for step in range(steps):
         red = int((math.sin(step / steps * math.pi * 2) * 127) + 128)
@@ -72,19 +78,19 @@ def process_thumbnail(temp_thumb, cache_file, title, duration, channel, views):
         background = image1.convert("RGBA").filter(ImageFilter.BoxBlur(20))
         background = ImageEnhance.Brightness(background).enhance(0.6)
         draw = ImageDraw.Draw(background)
-        
+
         # Create circular thumbnail with neon effect
         circle_thumbnail = crop_center_circle(youtube_img, 400, 20)
         circle_thumbnail = circle_thumbnail.resize((400, 400))
         background.paste(circle_thumbnail, (120, 160), circle_thumbnail)
-        
+
         # Add text overlay
         line1, line2 = truncate_text(title)
         draw.text((565, 180), line1, fill=(255, 255, 255), font=TITLE_FONT)
         draw.text((565, 230), line2, fill=(255, 255, 255), font=TITLE_FONT)
         draw.text((565, 320), f"{channel} | {views[:23]}", fill=(255, 255, 255), font=ARIAL_FONT)
         draw.text((10, 10), "ERA VIBES", fill="yellow", font=DEFAULT_FONT)
-        
+
         # Draw progress bar
         line_length = 580
         red_length = int(line_length * 0.6)
@@ -93,18 +99,18 @@ def process_thumbnail(temp_thumb, cache_file, title, duration, channel, views):
         draw.ellipse([565 + red_length - 10, 380 - 10, 565 + red_length + 10, 380 + 10], fill="red")
         draw.text((565, 400), "00:00", fill=(255, 255, 255), font=ARIAL_FONT)
         draw.text((1080, 400), duration, fill=(255, 255, 255), font=ARIAL_FONT)
-        
+
         # Add play icon overlay
         play_icons_path = os.path.join(ASSETS_DIR, "play_icons.png")
         play_icons = Image.open(play_icons_path).resize((580, 62))
         background.paste(play_icons, (565, 450), play_icons)
-        
+
         # Apply stroke effect
         stroke_width = 15
         stroke_color = generate_light_dark_color()
         stroke_image = Image.new("RGBA", (1280 + 2 * stroke_width, 720 + 2 * stroke_width), stroke_color)
         stroke_image.paste(background, (stroke_width, stroke_width))
-        
+
         os.remove(temp_thumb)
         stroke_image.save(cache_file)
         return cache_file
@@ -115,7 +121,7 @@ def process_thumbnail(temp_thumb, cache_file, title, duration, channel, views):
 async def get_thumb(videoid):
     cache_file = os.path.join(CACHE_DIR, f"{videoid}_v4.png")
     temp_thumb = os.path.join(CACHE_DIR, f"thumb{videoid}.png")
-    
+
     if os.path.isfile(cache_file):
         return cache_file
 
@@ -134,13 +140,13 @@ async def get_thumb(videoid):
     thumbnail = result.get("thumbnails", [{}])[0].get("url", "").split("?")[0] or YOUTUBE_IMG_URL
     views = result.get("viewCount", {}).get("short", "Unknown Views")
     channel = result.get("channel", {}).get("name", "Unknown Channel")
-    
+
     async with aiohttp.ClientSession() as session:
         async with session.get(thumbnail) as resp:
             if resp.status == 200:
                 async with aiofiles.open(temp_thumb, "wb") as f:
                     await f.write(await resp.read())
-    
+
     loop = asyncio.get_running_loop()
     final_file = await loop.run_in_executor(
         None,
