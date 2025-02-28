@@ -1,35 +1,46 @@
-import os, re, random, aiofiles, aiohttp, math
-from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps
+import os, re, random, math, aiofiles, aiohttp
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 from youtubesearchpython.__future__ import VideosSearch
 from ERAVIBES import app
 from config import YOUTUBE_IMG_URL
 
-# Load fonts once (optimization)
-arial = ImageFont.truetype("ERAVIBES/assets/font2.ttf", 30)
-font = ImageFont.truetype("ERAVIBES/assets/font.ttf", 30)
-title_font = ImageFont.truetype("ERAVIBES/assets/font3.ttf", 45)
+# Directories for assets and cache
+ASSETS_DIR = "ERAVIBES/assets"
+CACHE_DIR = "cache"
 
-def changeImageSize(maxWidth, maxHeight, image):
-    widthRatio = maxWidth / image.size[0]
-    heightRatio = maxHeight / image.size[1]
-    newWidth = int(widthRatio * image.size[0])
-    newHeight = int(heightRatio * image.size[1])
-    return image.resize((newWidth, newHeight))
+# Pre-load fonts for better performance
+ARIAL_FONT = ImageFont.truetype(os.path.join(ASSETS_DIR, "font2.ttf"), 30)
+DEFAULT_FONT = ImageFont.truetype(os.path.join(ASSETS_DIR, "font.ttf"), 30)
+TITLE_FONT = ImageFont.truetype(os.path.join(ASSETS_DIR, "font3.ttf"), 45)
 
-def truncate(text):
-    words = text.split(" ")
-    text1, text2 = "", ""
+def change_image_size(max_width, max_height, image):
+    """Image ko given dimensions ke hisaab se resize karo, aspect ratio maintain karte hue."""
+    width_ratio = max_width / image.width
+    height_ratio = max_height / image.height
+    new_width = int(image.width * width_ratio)
+    new_height = int(image.height * height_ratio)
+    return image.resize((new_width, new_height))
+
+def truncate_text(text, limit=30):
+    """
+    Text ko do lines me split karo, taki har line me max characters limit ho.
+    Return karta hai (line1, line2).
+    """
+    words = text.split()
+    line1, line2 = "", ""
     for word in words:
-        if len(text1) + len(word) < 30:
-            text1 += " " + word
-        elif len(text2) + len(word) < 30:
-            text2 += " " + word
-    return [text1.strip(), text2.strip()]
+        if len(line1) + len(word) < limit:
+            line1 += " " + word
+        elif len(line2) + len(word) < limit:
+            line2 += " " + word
+    return line1.strip(), line2.strip()
 
 def generate_light_dark_color():
+    """Random RGB color generate karo jisme har channel 100 se 200 ke beech ho."""
     return (random.randint(100, 200), random.randint(100, 200), random.randint(100, 200))
 
 def create_rgb_neon_circle(image, center, radius, border_width, steps=30):
+    """Neon effect ke liye image pe ek circle draw karo."""
     draw = ImageDraw.Draw(image)
     for step in range(steps):
         red = int((math.sin(step / steps * math.pi * 2) * 127) + 128)
@@ -44,34 +55,39 @@ def create_rgb_neon_circle(image, center, radius, border_width, steps=30):
     return image
 
 def crop_center_circle(img, output_size, border, crop_scale=1.5):
-    half_width, half_height = img.size[0] / 2, img.size[1] / 2
+    half_width, half_height = img.width / 2, img.height / 2
     larger_size = int(output_size * crop_scale)
-    img = img.crop((
+    cropped = img.crop((
         half_width - larger_size / 2,
         half_height - larger_size / 2,
         half_width + larger_size / 2,
         half_height + larger_size / 2
     ))
-    img = img.resize((output_size - 2 * border, output_size - 2 * border))
+    resized = cropped.resize((output_size - 2 * border, output_size - 2 * border))
+    
     final_img = Image.new("RGBA", (output_size, output_size), "white")
-    mask_main = Image.new("L", (output_size - 2 * border, output_size - 2 * border), 0)
-    draw_main = ImageDraw.Draw(mask_main)
-    draw_main.ellipse((0, 0, output_size - 2 * border, output_size - 2 * border), fill=255)
-    final_img.paste(img, (border, border), mask_main)
-    mask_border = Image.new("L", (output_size, output_size), 0)
-    draw_border = ImageDraw.Draw(mask_border)
-    draw_border.ellipse((0, 0, output_size, output_size), fill=255)
-    result = Image.composite(final_img, Image.new("RGBA", final_img.size, (0, 0, 0, 0)), mask_border)
+    mask = Image.new("L", (output_size - 2 * border, output_size - 2 * border), 0)
+    draw_mask = ImageDraw.Draw(mask)
+    draw_mask.ellipse((0, 0, output_size - 2 * border, output_size - 2 * border), fill=255)
+    final_img.paste(resized, (border, border), mask)
+    
     center = (output_size // 2, output_size // 2)
     radius = (output_size - 2 * border) // 2
-    return create_rgb_neon_circle(result, center, radius, 10)
+    return create_rgb_neon_circle(final_img, center, radius, 10)
 
 async def get_thumb(videoid):
-    # Check if thumbnail already exists in cache
-    if os.path.isfile(f"cache/{videoid}_v4.png"):
-        return f"cache/{videoid}_v4.png"
+    """
+    Thumbnail generate karo using YouTube video details.
+    Agar thumbnail cache me hai to use return karo, warna download, process, aur cache karo.
+    """
+    cache_file = os.path.join(CACHE_DIR, f"{videoid}_v4.png")
+    temp_thumb = os.path.join(CACHE_DIR, f"thumb{videoid}.png")
+    
+    # Agar cache file exist karti hai, directly return karo
+    if os.path.isfile(cache_file):
+        return cache_file
 
-    # Fetch YouTube video details
+    # YouTube video details fetch karo
     url = f"https://www.youtube.com/watch?v={videoid}"
     try:
         results = await VideosSearch(url, limit=1).next()
@@ -79,70 +95,65 @@ async def get_thumb(videoid):
             return YOUTUBE_IMG_URL
         result = results["result"][0]
     except Exception as e:
-        print(f"Error fetching YouTube results: {e}")
+        print(f"Error fetching YouTube details: {e}")
         return YOUTUBE_IMG_URL
 
-    # Extract video details
-    title = re.sub("\W+", " ", result.get("title", "Unsupported Title")).title()
+    # Video ke details extract karo
+    title = re.sub(r"\W+", " ", result.get("title", "Unsupported Title")).title()
     duration = result.get("duration", "Unknown Mins")
     thumbnail = result.get("thumbnails", [{}])[0].get("url", "").split("?")[0] or YOUTUBE_IMG_URL
     views = result.get("viewCount", {}).get("short", "Unknown Views")
     channel = result.get("channel", {}).get("name", "Unknown Channel")
-
-    # Download thumbnail
+    
+    # Thumbnail image ko async download karo
     async with aiohttp.ClientSession() as session:
         async with session.get(thumbnail) as resp:
             if resp.status == 200:
-                async with aiofiles.open(f"cache/thumb{videoid}.png", mode="wb") as f:
+                async with aiofiles.open(temp_thumb, "wb") as f:
                     await f.write(await resp.read())
-
+    
     try:
-        # Open downloaded thumbnail
-        youtube = Image.open(f"cache/thumb{videoid}.png")
-
-        # Resize and process image
-        image1 = changeImageSize(1280, 720, youtube)
-        image2 = image1.convert("RGBA")
-        background = image2.filter(filter=ImageFilter.BoxBlur(20))
-        enhancer = ImageEnhance.Brightness(background)
-        background = enhancer.enhance(0.6)
+        youtube_img = Image.open(temp_thumb)
+        image1 = change_image_size(1280, 720, youtube_img)
+        background = image1.convert("RGBA").filter(ImageFilter.BoxBlur(20))
+        background = ImageEnhance.Brightness(background).enhance(0.6)
         draw = ImageDraw.Draw(background)
-
-        # Add circular thumbnail with neon effect
-        circle_thumbnail = crop_center_circle(youtube, 400, 20)
+        
+        # Circular thumbnail with neon effect
+        circle_thumbnail = crop_center_circle(youtube_img, 400, 20)
         circle_thumbnail = circle_thumbnail.resize((400, 400))
         background.paste(circle_thumbnail, (120, 160), circle_thumbnail)
-
-        # Add text and other details
-        title1 = truncate(title)
-        draw.text((565, 180), title1[0], fill=(255, 255, 255), font=title_font)
-        draw.text((565, 230), title1[1], fill=(255, 255, 255), font=title_font)
-        draw.text((565, 320), f"{channel}  |  {views[:23]}", (255, 255, 255), font=arial)
-        draw.text((10, 10), "ERA VIBES", fill="yellow", font=font)
-
-        # Add progress bar
+        
+        # Text overlay
+        line1, line2 = truncate_text(title)
+        draw.text((565, 180), line1, fill=(255, 255, 255), font=TITLE_FONT)
+        draw.text((565, 230), line2, fill=(255, 255, 255), font=TITLE_FONT)
+        draw.text((565, 320), f"{channel} | {views[:23]}", fill=(255, 255, 255), font=ARIAL_FONT)
+        draw.text((10, 10), "APPLE MUSIC", fill="yellow", font=DEFAULT_FONT)
+        
+        # Progress bar draw karo
         line_length = 580
         red_length = int(line_length * 0.6)
         draw.line([(565, 380), (565 + red_length, 380)], fill="red", width=9)
         draw.line([(565 + red_length, 380), (565 + line_length, 380)], fill="white", width=8)
         draw.ellipse([565 + red_length - 10, 380 - 10, 565 + red_length + 10, 380 + 10], fill="red")
-        draw.text((565, 400), "00:00", (255, 255, 255), font=arial)
-        draw.text((1080, 400), duration, (255, 255, 255), font=arial)
-
-        # Add play icons
-        play_icons = Image.open("ERAVIBES/assets/play_icons.png").resize((580, 62))
+        draw.text((565, 400), "00:00", fill=(255, 255, 255), font=ARIAL_FONT)
+        draw.text((1080, 400), duration, fill=(255, 255, 255), font=ARIAL_FONT)
+        
+        # Play icon add karo
+        play_icons_path = os.path.join(ASSETS_DIR, "play_icons.png")
+        play_icons = Image.open(play_icons_path).resize((580, 62))
         background.paste(play_icons, (565, 450), play_icons)
-
-        # Add stroke effect
+        
+        # Stroke effect (border) add karo
         stroke_width = 15
         stroke_color = generate_light_dark_color()
         stroke_image = Image.new("RGBA", (1280 + 2 * stroke_width, 720 + 2 * stroke_width), stroke_color)
         stroke_image.paste(background, (stroke_width, stroke_width))
-
-        # Save and return the final thumbnail
-        os.remove(f"cache/thumb{videoid}.png")
-        stroke_image.save(f"cache/{videoid}_v4.png")
-        return f"cache/{videoid}_v4.png"
+        
+        os.remove(temp_thumb)  # Temporary file delete karo
+        stroke_image.save(cache_file)
+        return cache_file
     except Exception as e:
         print(f"Error processing thumbnail: {e}")
         return YOUTUBE_IMG_URL
