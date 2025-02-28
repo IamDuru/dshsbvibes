@@ -167,7 +167,7 @@ async def get_thumb(vidid):
     play_icons = play_icons.resize((580, 62))
     background.paste(play_icons, (text_x_position, 450), play_icons)
 
-        try:
+    try:
             os.remove(f"cache/qthumb{vidid}.png")
         except:
             pass
@@ -176,3 +176,6 @@ async def get_thumb(vidid):
         return f"cache/{vidid}_qv4.png"
     except Exception as e:
         return YOUTUBE_IMG_URL
+
+
+        
