@@ -169,14 +169,15 @@ async def get_thumb(vidid):
 
     try:
             os.remove(f"cache/qthumb{vidid}.png")
-        except:
+        except
             pass
         
         background.save(f"cache/{vidid}_qv4.png")
         return f"cache/{vidid}_qv4.png"
-        except Exception as e:
+    except Exception as e:
             print(f"Error processing thumbnail: {e}")
             return YOUTUBE_IMG_URL
+        
 
 
         
