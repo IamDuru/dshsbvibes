@@ -45,7 +45,7 @@ def stream_markup_timer(_, chat_id, played, dur):
         ],
         [
             InlineKeyboardButton("˹ ᴜᴘᴅᴧᴛᴇ ˼", url="https://t.me/net_pro_max"),
-            InlineKeyboardButton("˹ sᴜᴘᴘᴏꝛᴛ  ˼", url="https://t.me/+cXIPgHSuJnxiNjU1)            
+            InlineKeyboardButton("˹ sᴜᴘᴘᴏꝛᴛ  ˼", url="https://t.me/+cXIPgHSuJnxiNjU1")            
         ],
         [
             InlineKeyboardButton(text=_["CLOSE_BUTTON"].lower(), callback_data="close")
@@ -65,7 +65,7 @@ def stream_markup(_, chat_id):
         ],
         [
             InlineKeyboardButton("˹ ᴜᴘᴅᴧᴛᴇ ˼", url="https://t.me/net_pro_max"),
-            InlineKeyboardButton("˹ sᴜᴘᴘᴏꝛᴛ  ˼", url="https://t.me/+cXIPgHSuJnxiNjU1)            
+            InlineKeyboardButton("˹ sᴜᴘᴘᴏꝛᴛ  ˼", url="https://t.me/+cXIPgHSuJnxiNjU1")            
         ],
         [
             InlineKeyboardButton(text=_["CLOSE_BUTTON"].lower(), callback_data="close")
