@@ -174,8 +174,9 @@ async def get_thumb(vidid):
         
         background.save(f"cache/{vidid}_qv4.png")
         return f"cache/{vidid}_qv4.png"
-    except: Exception as e:
-        return YOUTUBE_IMG_URL
+        except Exception as e:
+            print(f"Error processing thumbnail: {e}")
+            return YOUTUBE_IMG_URL
 
 
         
