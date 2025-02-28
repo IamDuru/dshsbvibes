@@ -134,12 +134,10 @@ async def get_thumb(videoid):
         background.paste(play_icons, (565, 450), play_icons)
 
         # Add stroke effect
-        ''''
         stroke_width = 15
         stroke_color = generate_light_dark_color()
         stroke_image = Image.new("RGBA", (1280 + 2 * stroke_width, 720 + 2 * stroke_width), stroke_color)
         stroke_image.paste(background, (stroke_width, stroke_width))
-        '''
 
         # Save and return the final thumbnail
         os.remove(f"cache/thumb{videoid}.png")
