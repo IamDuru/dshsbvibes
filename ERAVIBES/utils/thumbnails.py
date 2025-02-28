@@ -168,10 +168,7 @@ async def get_thumb(vidid):
     background.paste(play_icons, (text_x_position, 450), play_icons)
 
     try:
-            os.remove(f"cache/qthumb{vidid}.png")
-        except
-            pass
-        
+        os.remove(f"cache/qthumb{vidid}.png")
         background.save(f"cache/{vidid}_qv4.png")
         return f"cache/{vidid}_qv4.png"
     except Exception as e:
