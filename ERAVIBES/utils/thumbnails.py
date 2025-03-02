@@ -76,7 +76,7 @@ def crop_circle(img, output_size, border, crop_scale=1.5):
     radius = (output_size - 2 * border) // 2
     return create_neon_circle(result, center, radius, 10)
 
-async def fetch_thumbnail(videoid):
+async def get_thumb(videoid):
     """Fetch and process YouTube thumbnail with neon effects and text overlays."""
     cache_path = f"cache/{videoid}_v4.png"
     if os.path.isfile(cache_path):
