@@ -1,23 +1,30 @@
-import os, re, random, aiofiles, aiohttp, math
-from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps
+import os
+import re
+import random
+import math
+import aiofiles
+import aiohttp
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 from youtubesearchpython.__future__ import VideosSearch
 from ERAVIBES import app
 from config import YOUTUBE_IMG_URL
 
-# Load fonts once (optimization)
+# Preload fonts for efficiency
 arial = ImageFont.truetype("ERAVIBES/assets/font2.ttf", 30)
 font = ImageFont.truetype("ERAVIBES/assets/font.ttf", 30)
 title_font = ImageFont.truetype("ERAVIBES/assets/font3.ttf", 45)
 
-def changeImageSize(maxWidth, maxHeight, image):
-    widthRatio = maxWidth / image.size[0]
-    heightRatio = maxHeight / image.size[1]
-    newWidth = int(widthRatio * image.size[0])
-    newHeight = int(heightRatio * image.size[1])
-    return image.resize((newWidth, newHeight))
+def resize_image(max_width, max_height, image):
+    """Resize image to fit within specified dimensions while maintaining aspect ratio."""
+    width_ratio = max_width / image.size[0]
+    height_ratio = max_height / image.size[1]
+    new_width = int(width_ratio * image.size[0])
+    new_height = int(height_ratio * image.size[1])
+    return image.resize((new_width, new_height))
 
-def truncate(text):
-    words = text.split(" ")
+def truncate_text(text):
+    """Split text into two lines, each with a maximum of 30 characters."""
+    words = text.split()
     text1, text2 = "", ""
     for word in words:
         if len(text1) + len(word) < 30:
@@ -26,10 +33,12 @@ def truncate(text):
             text2 += " " + word
     return [text1.strip(), text2.strip()]
 
-def generate_light_dark_color():
+def generate_random_color():
+    """Generate a random light color."""
     return (random.randint(100, 200), random.randint(100, 200), random.randint(100, 200))
 
-def create_rgb_neon_circle(image, center, radius, border_width, steps=30):
+def create_neon_circle(image, center, radius, border_width, steps=30):
+    """Create a neon circle effect on the image."""
     draw = ImageDraw.Draw(image)
     for step in range(steps):
         red = int((math.sin(step / steps * math.pi * 2) * 127) + 128)
@@ -43,7 +52,8 @@ def create_rgb_neon_circle(image, center, radius, border_width, steps=30):
         ], outline=(red, green, blue), width=border_width)
     return image
 
-def crop_center_circle(img, output_size, border, crop_scale=1.5):
+def crop_circle(img, output_size, border, crop_scale=1.5):
+    """Crop the center of the image into a circle with a neon border."""
     half_width, half_height = img.size[0] / 2, img.size[1] / 2
     larger_size = int(output_size * crop_scale)
     img = img.crop((
@@ -64,14 +74,14 @@ def crop_center_circle(img, output_size, border, crop_scale=1.5):
     result = Image.composite(final_img, Image.new("RGBA", final_img.size, (0, 0, 0, 0)), mask_border)
     center = (output_size // 2, output_size // 2)
     radius = (output_size - 2 * border) // 2
-    return create_rgb_neon_circle(result, center, radius, 10)
+    return create_neon_circle(result, center, radius, 10)
 
-async def get_thumb(videoid):
-    # Check if thumbnail already exists in cache
-    if os.path.isfile(f"cache/{videoid}_v4.png"):
-        return f"cache/{videoid}_v4.png"
+async def fetch_thumbnail(videoid):
+    """Fetch and process YouTube thumbnail with neon effects and text overlays."""
+    cache_path = f"cache/{videoid}_v4.png"
+    if os.path.isfile(cache_path):
+        return cache_path
 
-    # Fetch YouTube video details
     url = f"https://www.youtube.com/watch?v={videoid}"
     try:
         results = await VideosSearch(url, limit=1).next()
@@ -82,45 +92,35 @@ async def get_thumb(videoid):
         print(f"Error fetching YouTube results: {e}")
         return YOUTUBE_IMG_URL
 
-    # Extract video details
-    title = re.sub("\W+", " ", result.get("title", "Unsupported Title")).title()
+    title = re.sub(r"\W+", " ", result.get("title", "Unsupported Title")).title()
     duration = result.get("duration", "Unknown Mins")
-    thumbnail = result.get("thumbnails", [{}])[0].get("url", "").split("?")[0] or YOUTUBE_IMG_URL
+    thumbnail_url = result.get("thumbnails", [{}])[0].get("url", "").split("?")[0] or YOUTUBE_IMG_URL
     views = result.get("viewCount", {}).get("short", "Unknown Views")
     channel = result.get("channel", {}).get("name", "Unknown Channel")
 
-    # Download thumbnail
     async with aiohttp.ClientSession() as session:
-        async with session.get(thumbnail) as resp:
+        async with session.get(thumbnail_url) as resp:
             if resp.status == 200:
                 async with aiofiles.open(f"cache/thumb{videoid}.png", mode="wb") as f:
                     await f.write(await resp.read())
 
     try:
-        # Open downloaded thumbnail
         youtube = Image.open(f"cache/thumb{videoid}.png")
-
-        # Resize and process image
-        image1 = changeImageSize(1280, 720, youtube)
-        image2 = image1.convert("RGBA")
-        background = image2.filter(filter=ImageFilter.BoxBlur(20))
+        image = resize_image(1280, 720, youtube).convert("RGBA")
+        background = image.filter(filter=ImageFilter.BoxBlur(20))
         enhancer = ImageEnhance.Brightness(background)
         background = enhancer.enhance(0.6)
         draw = ImageDraw.Draw(background)
 
-        # Add circular thumbnail with neon effect
-        circle_thumbnail = crop_center_circle(youtube, 400, 20)
-        circle_thumbnail = circle_thumbnail.resize((400, 400))
+        circle_thumbnail = crop_circle(youtube, 400, 20).resize((400, 400))
         background.paste(circle_thumbnail, (120, 160), circle_thumbnail)
 
-        # Add text and other details
-        title1 = truncate(title)
-        draw.text((565, 180), title1[0], fill=(255, 255, 255), font=title_font)
-        draw.text((565, 230), title1[1], fill=(255, 255, 255), font=title_font)
-        draw.text((565, 320), f"{channel}  |  {views[:23]}", (255, 255, 255), font=arial)
+        title_lines = truncate_text(title)
+        draw.text((565, 180), title_lines[0], fill=(255, 255, 255), font=title_font)
+        draw.text((565, 230), title_lines[1], fill=(255, 255, 255), font=title_font)
+        draw.text((565, 320), f"{channel} | {views[:23]}", (255, 255, 255), font=arial)
         draw.text((10, 10), "ERA VIBES", fill="yellow", font=font)
 
-        # Add progress bar
         line_length = 580
         red_length = int(line_length * 0.6)
         draw.line([(565, 380), (565 + red_length, 380)], fill="red", width=9)
@@ -129,20 +129,17 @@ async def get_thumb(videoid):
         draw.text((565, 400), "00:00", (255, 255, 255), font=arial)
         draw.text((1080, 400), duration, (255, 255, 255), font=arial)
 
-        # Add play icons
         play_icons = Image.open("ERAVIBES/assets/play_icons.png").resize((580, 62))
         background.paste(play_icons, (565, 450), play_icons)
 
-        # Add stroke effect
         stroke_width = 15
-        stroke_color = generate_light_dark_color()
+        stroke_color = generate_random_color()
         stroke_image = Image.new("RGBA", (1280 + 2 * stroke_width, 720 + 2 * stroke_width), stroke_color)
         stroke_image.paste(background, (stroke_width, stroke_width))
 
-        # Save and return the final thumbnail
         os.remove(f"cache/thumb{videoid}.png")
-        stroke_image.save(f"cache/{videoid}_v4.png")
-        return f"cache/{videoid}_v4.png"
+        stroke_image.save(cache_path)
+        return cache_path
     except Exception as e:
         print(f"Error processing thumbnail: {e}")
         return YOUTUBE_IMG_URL
