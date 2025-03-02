@@ -23,6 +23,20 @@ def truncate(text: str) -> list:
             line2 += " " + word
     return [line1.strip(), line2.strip()]
 
+def create_rgb_neon_circle(image: Image.Image, center: tuple, radius: int, border_width: int, steps: int = 30) -> Image.Image:
+    draw = ImageDraw.Draw(image)
+    for step in range(steps):
+        red = int((math.sin(step / steps * math.pi * 2) * 127) + 128)
+        green = int((math.sin((step / steps * math.pi * 2) + (math.pi / 3)) * 127) + 128)
+        blue = int((math.sin((step / steps * math.pi * 2) + (math.pi * 2 / 3)) * 127) + 128)
+        draw.ellipse([
+            center[0] - radius - border_width + step,
+            center[1] - radius - border_width + step,
+            center[0] + radius + border_width - step,
+            center[1] + radius + border_width - step
+        ], outline=(red, green, blue), width=border_width)
+    return image
+
 def crop_center_circle(img: Image.Image, output_size: int, border: int, crop_scale: float = 1.5) -> Image.Image:
     half_width, half_height = img.size[0] / 2, img.size[1] / 2
     larger_size = int(output_size * crop_scale)
@@ -34,19 +48,15 @@ def crop_center_circle(img: Image.Image, output_size: int, border: int, crop_sca
     ))
     img = img.resize((output_size - 2 * border, output_size - 2 * border))
     final_img = Image.new("RGBA", (output_size, output_size), "white")
-    mask = Image.new("L", (output_size - 2 * border, output_size - 2 * border), 0)
-    draw = ImageDraw.Draw(mask)
-    draw.ellipse((0, 0, output_size - 2 * border, output_size - 2 * border), fill=255)
-    final_img.paste(img, (border, border), mask)
-    return final_img
-
-def add_neon_glow(image: Image.Image, center: tuple, radius: int, glow_color: tuple = (0, 200, 255), blur_radius: int = 20) -> Image.Image:
-    # Create a new layer for glow and draw a filled circle with partial transparency
-    glow_layer = Image.new("RGBA", image.size, (0, 0, 0, 0))
-    glow_draw = ImageDraw.Draw(glow_layer)
-    glow_draw.ellipse([center[0]-radius, center[1]-radius, center[0]+radius, center[1]+radius], fill=glow_color + (180,))
-    glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(blur_radius))
-    return Image.alpha_composite(image, glow_layer)
+    mask_main = Image.new("L", (output_size - 2 * border, output_size - 2 * border), 0)
+    draw_main = ImageDraw.Draw(mask_main)
+    draw_main.ellipse((0, 0, output_size - 2 * border, output_size - 2 * border), fill=255)
+    final_img.paste(img, (border, border), mask_main)
+    mask_border = Image.new("L", (output_size, output_size), 0)
+    draw_border = ImageDraw.Draw(mask_border)
+    draw_border.ellipse((0, 0, output_size, output_size), fill=255)
+    result = Image.composite(final_img, Image.new("RGBA", final_img.size, (0, 0, 0, 0)), mask_border)
+    return result
 
 async def get_thumb(videoid: str) -> str:
     cache_path = f"cache/{videoid}_v4.png"
@@ -82,34 +92,25 @@ async def get_thumb(videoid: str) -> str:
 
     try:
         youtube_img = Image.open(temp_path)
+        image1 = change_image_size(1280, 720, youtube_img)
+        image2 = image1.convert("RGBA")
+        background = image2.filter(ImageFilter.BoxBlur(20))
+        background = ImageEnhance.Brightness(background).enhance(0.6)
+        draw = ImageDraw.Draw(background)
 
-        # Create background with blurred video thumbnail
-        bg_img = change_image_size(1280, 720, youtube_img)
-        bg_img = bg_img.convert("RGBA")
-        bg_img = bg_img.filter(ImageFilter.GaussianBlur(20))
-        bg_img = ImageEnhance.Brightness(bg_img).enhance(0.6)
-        draw = ImageDraw.Draw(bg_img)
-
-        # Process circular thumbnail with a subtle drop shadow
         circle_thumbnail = crop_center_circle(youtube_img, 400, 20)
         circle_thumbnail = circle_thumbnail.resize((400, 400))
         circle_pos = (120, 160)
-        shadow = Image.new("RGBA", (400, 400), (0, 0, 0, 0))
-        shadow_draw = ImageDraw.Draw(shadow)
-        shadow_draw.ellipse((10, 10, 400, 400), fill=(0, 0, 0, 100))
-        bg_img.paste(shadow, (circle_pos[0]+5, circle_pos[1]+5), shadow)
-        bg_img.paste(circle_thumbnail, circle_pos, circle_thumbnail)
-
-        # Add a refined neon glow around the circular image using a subtle blur
+        background.paste(circle_thumbnail, circle_pos, circle_thumbnail)
         center = (circle_pos[0] + 200, circle_pos[1] + 200)
-        bg_img = add_neon_glow(bg_img, center, 210, glow_color=(0, 200, 255), blur_radius=20)
+        create_rgb_neon_circle(background, center, 200, 10)
 
-        # Overlay text details
         text_x = 565
         title_lines = truncate(title)
         draw.text((text_x, 180), title_lines[0], fill=(255, 255, 255), font=TITLE_FONT)
         draw.text((text_x, 230), title_lines[1], fill=(255, 255, 255), font=TITLE_FONT)
         draw.text((text_x, 320), f"{channel} | {views[:23]}", fill=(255, 255, 255), font=ARIAL_FONT)
+
         line_length = 580
         red_length = int(line_length * 0.6)
         draw.line([(text_x, 380), (text_x + red_length, 380)], fill="red", width=9)
@@ -121,13 +122,14 @@ async def get_thumb(videoid: str) -> str:
         draw.text((1080, 400), duration, fill=(255, 255, 255), font=ARIAL_FONT)
 
         play_icons = Image.open("ERAVIBES/assets/play_icons.png").resize((580, 62))
-        bg_img.paste(play_icons, (text_x, 450), play_icons)
+        background.paste(play_icons, (text_x, 450), play_icons)
 
-        bg_img.save(cache_path)
+        background.save(cache_path)
         try:
             os.remove(temp_path)
         except Exception as e:
             print(f"Error removing temp file: {e}")
+
         return cache_path
 
     except Exception as e:
