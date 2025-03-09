@@ -64,7 +64,7 @@ class YouTubeAPI:
                 for entity in message.caption_entities:
                     if entity.type == "text_link":
                         return entity.url
-        if offset in (None,):
+        if offset is None:
             return None
         return text[offset : offset + length]
 
@@ -74,7 +74,7 @@ class YouTubeAPI:
         if "&" in link:
             link = link.split("&")[0]
         results = VideosSearch(link, limit=1)
-        for result in (await results.next())["result"]:
+        async for result in results.next()["result"]:
             title = result["title"]
             duration_min = result["duration"]
             thumbnail = result["thumbnails"][0]["url"].split("?")[0]
@@ -91,7 +91,7 @@ class YouTubeAPI:
         if "&" in link:
             link = link.split("&")[0]
         results = VideosSearch(link, limit=1)
-        for result in (await results.next())["result"]:
+        async for result in results.next()["result"]:
             title = result["title"]
             return title
 
@@ -101,7 +101,7 @@ class YouTubeAPI:
         if "&" in link:
             link = link.split("&")[0]
         results = VideosSearch(link, limit=1)
-        for result in (await results.next())["result"]:
+        async for result in results.next()["result"]:
             duration = result["duration"]
             return duration
 
@@ -111,7 +111,7 @@ class YouTubeAPI:
         if "&" in link:
             link = link.split("&")[0]
         results = VideosSearch(link, limit=1)
-        for result in (await results.next())["result"]:
+        async for result in results.next()["result"]:
             thumbnail = result["thumbnails"][0]["url"].split("?")[0]
             return thumbnail
 
@@ -148,7 +148,7 @@ class YouTubeAPI:
             for key in result:
                 if key == "":
                     result.remove(key)
-        except:
+        except Exception:
             result = []
         return result
 
@@ -185,17 +185,16 @@ class YouTubeAPI:
             r = ydl.extract_info(link, download=False)
             for format in r["formats"]:
                 try:
-                    str(format["format"])
-                except:
+                    _ = format["format"]
+                except Exception:
                     continue
-                if not "dash" in str(format["format"]).lower():
+                if "dash" not in str(format["format"]).lower():
                     try:
-                        format["format"]
-                        format["filesize"]
-                        format["format_id"]
-                        format["ext"]
-                        format["format_note"]
-                    except:
+                        _ = format["filesize"]
+                        _ = format["format_id"]
+                        _ = format["ext"]
+                        _ = format["format_note"]
+                    except Exception:
                         continue
                     formats_available.append({
                         "format": format["format"],
@@ -221,112 +220,126 @@ class YouTubeAPI:
         return title, duration_min, thumbnail, vidid
 
     async def _download(self, link: str, mystic,
-                    video: Union[bool, str] = None,
-                    videoid: Union[bool, str] = None,
-                    songaudio: Union[bool, str] = None,
-                    songvideo: Union[bool, str] = None,
-                    format_id: Union[bool, str] = None,
-                    title: Union[bool, str] = None) -> str:
-    if videoid:
-        link = self.base + link
+                        video: Union[bool, str] = None,
+                        videoid: Union[bool, str] = None,
+                        songaudio: Union[bool, str] = None,
+                        songvideo: Union[bool, str] = None,
+                        format_id: Union[bool, str] = None,
+                        title: Union[bool, str] = None) -> str:
+        if videoid:
+            link = self.base + link
 
-    loop = asyncio.get_running_loop()
+        loop = asyncio.get_running_loop()
 
-    def audio_dl():
-        ydl_opts = {
-            "format": "bestaudio/best",
-            "outtmpl": "downloads/%(id)s.%(ext)s",
-            "geo_bypass": True,
-            "nocheckcertificate": True,
-            "quiet": True,
-            "no_warnings": True,
-            # Download options to speed up download
-            "concurrent_fragment_downloads": 4,
-            "http_chunk_size": 1048576,  # 1 MB per chunk
-        }
-        x = yt_dlp.YoutubeDL(ydl_opts)
-        info = x.extract_info(link, False)
-        xyz = os.path.join("downloads", f"{info['id']}.{info['ext']}")
-        if os.path.exists(xyz):
+        def audio_dl():
+            ydl_opts = {
+                "format": "bestaudio/best",
+                "outtmpl": "downloads/%(id)s.%(ext)s",
+                "geo_bypass": True,
+                "nocheckcertificate": True,
+                "quiet": True,
+                "no_warnings": True,
+                "concurrent_fragment_downloads": 4,
+                "http_chunk_size": 1048576,
+            }
+            x = yt_dlp.YoutubeDL(ydl_opts)
+            info = x.extract_info(link, False)
+            xyz = os.path.join("downloads", f"{info['id']}.{info['ext']}")
+            if os.path.exists(xyz):
+                return xyz
+            x.download([link])
             return xyz
-        x.download([link])
-        return xyz
 
-    def video_dl():
-        ydl_opts = {
-            "format": "(bestvideo[height<=?720][width<=?1280][ext=mp4])+(bestaudio[ext=m4a])",
-            "outtmpl": "downloads/%(id)s.%(ext)s",
-            "geo_bypass": True,
-            "nocheckcertificate": True,
-            "quiet": True,
-            "no_warnings": True,
-            # Download options to speed up download
-            "concurrent_fragment_downloads": 4,
-            "http_chunk_size": 1048576,
-        }
-        x = yt_dlp.YoutubeDL(ydl_opts)
-        info = x.extract_info(link, False)
-        xyz = os.path.join("downloads", f"{info['id']}.{info['ext']}")
-        if os.path.exists(xyz):
+        def video_dl():
+            ydl_opts = {
+                "format": "(bestvideo[height<=?720][width<=?1280][ext=mp4])+(bestaudio[ext=m4a])",
+                "outtmpl": "downloads/%(id)s.%(ext)s",
+                "geo_bypass": True,
+                "nocheckcertificate": True,
+                "quiet": True,
+                "no_warnings": True,
+                "concurrent_fragment_downloads": 4,
+                "http_chunk_size": 1048576,
+            }
+            x = yt_dlp.YoutubeDL(ydl_opts)
+            info = x.extract_info(link, False)
+            xyz = os.path.join("downloads", f"{info['id']}.{info['ext']}")
+            if os.path.exists(xyz):
+                return xyz
+            x.download([link])
             return xyz
-        x.download([link])
-        return xyz
 
-    def song_video_dl():
-        formats = f"{format_id}+140"
-        fpath = f"downloads/{title}"
-        ydl_optssx = {
-            "format": formats,
-            "outtmpl": fpath,
-            "geo_bypass": True,
-            "nocheckcertificate": True,
-            "quiet": True,
-            "no_warnings": True,
-            "prefer_ffmpeg": True,
-            "merge_output_format": "mp4",
-            # Speed options
-            "concurrent_fragment_downloads": 4,
-            "http_chunk_size": 1048576,
+        def song_video_dl():
+            formats = f"{format_id}+140"
+            fpath = f"downloads/{title}"
+            ydl_optssx = {
+                "format": formats,
+                "outtmpl": fpath,
+                "geo_bypass": True,
+                "nocheckcertificate": True,
+                "quiet": True,
+                "no_warnings": True,
+                "prefer_ffmpeg": True,
+                "merge_output_format": "mp4",
+                "concurrent_fragment_downloads": 4,
+                "http_chunk_size": 1048576,
+            }
+            x = yt_dlp.YoutubeDL(ydl_optssx)
+            x.download([link])
+
+        def song_audio_dl():
+            fpath = f"downloads/{title}.%(ext)s"
+            ydl_optssx = {
+                "format": format_id,
+                "outtmpl": f"downloads/{title}.%(ext)s",
+                "geo_bypass": True,
+                "nocheckcertificate": True,
+                "quiet": True,
+                "no_warnings": True,
+                "prefer_ffmpeg": True,
+                "postprocessors": [{
+                    "key": "FFmpegExtractAudio",
+                    "preferredcodec": "mp3",
+                    "preferredquality": "192",
+                }],
+                "concurrent_fragment_downloads": 4,
+                "http_chunk_size": 1048576,
+            }
+            x = yt_dlp.YoutubeDL(ydl_optssx)
+            x.download([link])
+
+        if songvideo:
+            await loop.run_in_executor(None, song_video_dl)
+            fpath = f"downloads/{title}.mp4"
+            return fpath
+        elif songaudio:
+            await loop.run_in_executor(None, song_audio_dl)
+            fpath = f"downloads/{title}.mp3"
+            return fpath
+        elif video:
+            downloaded_file = await loop.run_in_executor(None, video_dl)
+            return downloaded_file, True
+        else:
+            downloaded_file = await loop.run_in_executor(None, audio_dl)
+            return downloaded_file, True
+
+    async def download(self, link: str, mystic,
+                       video: Union[bool, str] = None,
+                       videoid: Union[bool, str] = None,
+                       songaudio: Union[bool, str] = None,
+                       songvideo: Union[bool, str] = None,
+                       format_id: Union[bool, str] = None,
+                       title: Union[bool, str] = None):
+        if os.path.exists(f"downloads/{link.replace(self.base, '')}.mp3"):
+            return f"downloads/{link.replace(self.base, '')}.mp3", True
+        options = {
+            "format": "bestaudio[ext=m4a]",
+            "outtmpl": "downloads/%(id)s.%(ext)s",
         }
-        x = yt_dlp.YoutubeDL(ydl_optssx)
-        x.download([link])
-
-    def song_audio_dl():
-        fpath = f"downloads/{title}.%(ext)s"
-        ydl_optssx = {
-            "format": format_id,
-            "outtmpl": fpath,
-            "geo_bypass": True,
-            "nocheckcertificate": True,
-            "quiet": True,
-            "no_warnings": True,
-            "prefer_ffmpeg": True,
-            "postprocessors": [{
-                "key": "FFmpegExtractAudio",
-                "preferredcodec": "mp3",
-                "preferredquality": "192",
-            }],
-            # Speed options
-            "concurrent_fragment_downloads": 4,
-            "http_chunk_size": 1048576,
-        }
-        x = yt_dlp.YoutubeDL(ydl_optssx)
-        x.download([link])
-
-    if songvideo:
-        await loop.run_in_executor(None, song_video_dl)
-        fpath = f"downloads/{title}.mp4"
-        return fpath
-
-    elif songaudio:
-        await loop.run_in_executor(None, song_audio_dl)
-        fpath = f"downloads/{title}.mp3"
-        return fpath
-
-    elif video:
-        downloaded_file = await loop.run_in_executor(None, video_dl)
-        return downloaded_file, True
-
-    else:
-        downloaded_file = await loop.run_in_executor(None, audio_dl)
-        return downloaded_file, True
+        try:
+            async with ytdlx("Ehab_@flaregun", options) as client:
+                path = await client.download(link.replace(self.base, ''))
+        except Exception as e:
+            print(e)
+            return
+        return path, True
