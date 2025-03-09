@@ -59,7 +59,7 @@ async def auto_end():
             
             if datetime.now() > timer:
                 if await is_active_chat(chat_id):  # Check if chat is active
-                    autoend[chat_id] = datetime.now() + timedelta(minutes=5)  # Extend timer if active
+                    autoend[chat_id] = datetime.now() + timedelta(minutes=1)  # Extend timer if active
                     continue  # Skip ending if active
                 
                 autoend.pop(chat_id, None)  # Remove from autoend safely
