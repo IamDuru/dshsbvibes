@@ -39,9 +39,9 @@ def stream_markup_timer(_, chat_id, played, dur):
             )
         ],
         [
-            InlineKeyboardButton(text="⏸ pause", callback_data=f"ADMIN Pause|{chat_id}"),
-            InlineKeyboardButton(text="⏹ stop", callback_data=f"ADMIN Stop|{chat_id}"),
-            InlineKeyboardButton(text="▶ play", callback_data=f"ADMIN Resume|{chat_id}")
+            InlineKeyboardButton(text="⏸ ᴘᴀᴜsᴇ", callback_data=f"ADMIN Pause|{chat_id}"),
+            InlineKeyboardButton(text="⏹ sᴛᴏᴘ", callback_data=f"ADMIN Stop|{chat_id}"),
+            InlineKeyboardButton(text="▶ ᴘʟᴀʏ", callback_data=f"ADMIN Resume|{chat_id}")
         ],
         [
             InlineKeyboardButton("˹ ᴜᴘᴅᴧᴛᴇ ˼", url="https://t.me/net_pro_max"),
@@ -59,9 +59,9 @@ def stream_markup_timer(_, chat_id, played, dur):
 def stream_markup(_, chat_id):
     buttons = [
         [
-            InlineKeyboardButton(text="⏸ pause", callback_data=f"ADMIN Pause|{chat_id}"),
-            InlineKeyboardButton(text="⏹ stop", callback_data=f"ADMIN Stop|{chat_id}"),
-            InlineKeyboardButton(text="▶ play", callback_data=f"ADMIN Resume|{chat_id}")
+            InlineKeyboardButton(text="⏸ ᴘᴀᴜsᴇ", callback_data=f"ADMIN Pause|{chat_id}"),
+            InlineKeyboardButton(text="⏹ sᴛᴏᴘ", callback_data=f"ADMIN Stop|{chat_id}"),
+            InlineKeyboardButton(text="▶ ᴘʟᴀʏ", callback_data=f"ADMIN Resume|{chat_id}")
         ],
         [
             InlineKeyboardButton("˹ ᴜᴘᴅᴧᴛᴇ ˼", url="https://t.me/net_pro_max"),
@@ -92,6 +92,28 @@ def track_markup(_, videoid, user_id, channel, fplay):
                 callback_data=f"forceclose {videoid}|{user_id}",
             )
         ],
+    ]
+    return buttons
+
+
+
+def stream_markup(_, chat_id):
+    buttons = [
+        [
+            InlineKeyboardButton(text="▷", callback_data=f"ADMIN Resume|{chat_id}"),
+            InlineKeyboardButton(text="II", callback_data=f"ADMIN Pause|{chat_id}"),
+            InlineKeyboardButton(text="‣‣I", callback_data=f"ADMIN Skip|{chat_id}"),
+            InlineKeyboardButton(text="▢", callback_data=f"ADMIN Stop|{chat_id}"),
+        ],
+       [
+            InlineKeyboardButton(
+                text="✰ ᴜᴘᴅᴧᴛᴇ ✰", url=f"t.me/ai_image_junction"
+            ),
+            InlineKeyboardButton(
+                text="✰ sᴜᴘᴘᴏꝛᴛ ✰", url=f"t.me/+cXIPgHSuJnxiNjU1"
+            )
+        ],
+        [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close")],
     ]
     return buttons
 
