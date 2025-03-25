@@ -166,7 +166,7 @@ class YouTubeAPI:
             "-g",
             "-f",
             "best[height<=?720][width<=?1280]",
-            f"{link}",
+            link,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
@@ -251,7 +251,10 @@ class YouTubeAPI:
         thumbnail = result[query_type]["thumbnails"][0]["url"].split("?")[0]
         return title, duration_min, thumbnail, vidid
     
-    async def download(self, link: str, mystic, video: Union[bool, str] = None, videoid: Union[bool, str] = None, songaudio: Union[bool, str] = None, songvideo: Union[bool, str] = None, format_id: Union[bool, str] = None, title: Union[bool, str] = None):
+    async def download(self, link: str, mystic, video: Union[bool, str] = None,
+                       videoid: Union[bool, str] = None, songaudio: Union[bool, str] = None,
+                       songvideo: Union[bool, str] = None, format_id: Union[bool, str] = None,
+                       title: Union[bool, str] = None):
         file_identifier = link.replace(self.base, "")
         if os.path.exists(f"downloads/{file_identifier}.mp3"):
             return f"downloads/{file_identifier}.mp3", True
@@ -293,4 +296,98 @@ class YouTubeAPI:
                 return info['url']
         def video_dl():
             ydl_opts = {
-                "format": "(best
+                "format": "(bestvideo[height<=?720][width<=?1280][ext=mp4])+(bestaudio[ext=m4a])",
+                "outtmpl": "downloads/%(id)s.%(ext)s",
+                "geo_bypass": True,
+                "nocheckcertificate": True,
+                "quiet": True,
+                "cookiefile": cookie_txt_file(),
+                "no_warnings": True,
+            }
+            x = yt_dlp.YoutubeDL(ydl_opts)
+            info = x.extract_info(link, download=False)
+            xyz = os.path.join("downloads", f"{info['id']}.{info['ext']}")
+            if os.path.exists(xyz):
+                return xyz
+            x.download([link])
+            return xyz
+        def song_video_dl():
+            fmt = f"{format_id}+140"
+            fpath = f"downloads/{title}"
+            ydl_opts = {
+                "format": fmt,
+                "outtmpl": fpath,
+                "geo_bypass": True,
+                "nocheckcertificate": True,
+                "quiet": True,
+                "no_warnings": True,
+                "cookiefile": cookie_txt_file(),
+                "prefer_ffmpeg": True,
+                "merge_output_format": "mp4",
+            }
+            x = yt_dlp.YoutubeDL(ydl_opts)
+            x.download([link])
+        def song_audio_dl():
+            fpath = f"downloads/{title}.%(ext)s"
+            ydl_opts = {
+                "format": format_id,
+                "outtmpl": fpath,
+                "geo_bypass": True,
+                "nocheckcertificate": True,
+                "quiet": True,
+                "no_warnings": True,
+                "cookiefile": cookie_txt_file(),
+                "prefer_ffmpeg": True,
+                "postprocessors": [
+                    {
+                        "key": "FFmpegExtractAudio",
+                        "preferredcodec": "mp3",
+                        "preferredquality": "192",
+                    }
+                ],
+            }
+            x = yt_dlp.YoutubeDL(ydl_opts)
+            x.download([link])
+        if songvideo:
+            await loop.run_in_executor(None, song_video_dl)
+            fpath = f"downloads/{title}.mp4"
+            return fpath, True
+        elif songaudio:
+            await loop.run_in_executor(None, song_audio_dl)
+            fpath = f"downloads/{title}.mp3"
+            return fpath, True
+        elif video:
+            if await is_on_off(1):
+                direct = True
+                downloaded_file = await loop.run_in_executor(None, video_dl)
+            else:
+                proc = await asyncio.create_subprocess_exec(
+                    "yt-dlp",
+                    "--cookies", cookie_txt_file(),
+                    "-g",
+                    "-f",
+                    "best[height<=?720][width<=?1280]",
+                    link,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                stdout, stderr = await proc.communicate()
+                if stdout:
+                    downloaded_file = stdout.decode().split("\n")[0]
+                    direct = False
+                else:
+                    file_size = await check_file_size(link)
+                    if not file_size:
+                        print("None file Size")
+                        return None
+                    total_size_mb = file_size / (1024 * 1024)
+                    if total_size_mb > 250:
+                        print(f"File size {total_size_mb:.2f} MB exceeds the 100MB limit.")
+                        return None
+                    direct = True
+                    downloaded_file = await loop.run_in_executor(None, video_dl)
+            return downloaded_file, direct
+        else:
+            direct = True
+            downloaded_file = await loop.run_in_executor(None, audio_dl)
+            return downloaded_file, direct
