@@ -18,7 +18,6 @@ from ERAVIBES.utils.pastebin import Bin
 from ERAVIBES.utils.stream.queue import put_queue, put_queue_index
 from ERAVIBES.utils.thumbnails import get_thumb
 
-
 async def stream(
     _,
     mystic,
@@ -85,7 +84,7 @@ async def stream(
                     except:
                         await mystic.delete()
                         await app.send_message(
-                            LOG_GROUP_ID,
+                            config.LOGGER_ID,
                             f"**ʜᴇʏ [ᴏᴡɴᴇʀ](tg://user?id={config.OWNER_ID[0]}) ᴍᴀʏ ʙᴇ ᴍʏ ᴄᴏᴏᴋɪᴇs ʜᴀs ʙᴇᴇɴ ᴅᴇᴀᴅ ᴘʟᴇᴀsᴇ ᴄʜᴇᴄᴋ ᴏɴᴇ ᴛɪᴍᴇ ʙʏ ᴘʟᴀʏ ᴀɴʏ sᴏɴɢs**",
                             parse_mode=parse_mode,
                         )
@@ -156,7 +155,7 @@ async def stream(
         except:
             await mystic.delete()
             await app.send_message(
-                LOG_GROUP_ID,
+                config.LOGGER_ID,
                 f"**ʜᴇʏ [ᴏᴡɴᴇʀ](tg://user?id={config.OWNER_ID[0]}) ᴍᴀʏ ʙᴇ ᴍʏ ᴄᴏᴏᴋɪᴇs ʜᴀs ʙᴇᴇɴ ᴅᴇᴀᴅ ᴘʟᴇᴀsᴇ ᴄʜᴇᴄᴋ ᴏɴᴇ ᴛɪᴍᴇ ʙʏ ᴘʟᴀʏ ᴀɴʏ sᴏɴɢs**",
                 parse_mode=parse_mode,
             )
@@ -178,7 +177,7 @@ async def stream(
                 "video" if video else "audio",
             )
             position = len(db.get(chat_id)) - 1
-            qimg = await get_thumb(vidid)  # Assuming get_thumb can serve as queue thumb
+            qimg = await get_thumb(vidid)
             button = aq_markup(_, chat_id)
             run = await app.send_photo(
                 original_chat_id,
