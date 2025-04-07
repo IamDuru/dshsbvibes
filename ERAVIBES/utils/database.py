@@ -729,6 +729,12 @@ from pytgcalls.types import AudioQuality, VideoQuality
 AUDIO_FILE = os.path.join(config.TEMP_DB_FOLDER, "audio.json")
 VIDEO_FILE = os.path.join(config.TEMP_DB_FOLDER, "video.json")
 
+def load_data(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, "r") as file:
+            return json.load(file)
+    return {}
+
 
 audio = load_data(AUDIO_FILE)
 video = load_data(VIDEO_FILE)
