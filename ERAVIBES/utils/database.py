@@ -722,3 +722,36 @@ async def remove_banned_user(user_id: int):
     if not is_gbanned:
         return
     return await blockeddb.delete_one({"user_id": user_id})
+
+# Audio Video Limit
+from pytgcalls.types import AudioQuality, VideoQuality
+
+AUDIO_FILE = os.path.join(config.TEMP_DB_FOLDER, "audio.json")
+VIDEO_FILE = os.path.join(config.TEMP_DB_FOLDER, "video.json")
+
+
+audio = load_data(AUDIO_FILE)
+video = load_data(VIDEO_FILE)
+
+async def get_audio_bitrate(chat_id: int) -> str:
+    mode = audio.get(str(chat_id), "MEDIUM")
+    return {
+        "STUDIO": AudioQuality.STUDIO,
+        "HIGH": AudioQuality.HIGH,
+        "MEDIUM": AudioQuality.MEDIUM,
+        "LOW": AudioQuality.LOW,
+    }.get(mode, AudioQuality.MEDIUM)
+
+
+async def get_video_bitrate(chat_id: int) -> str:
+    mode = video.get(
+        str(chat_id), "SD_480p"
+    )  # Ensure chat_id is a string for JSON compatibility
+    return {
+        "UHD_4K": VideoQuality.UHD_4K,
+        "QHD_2K": VideoQuality.QHD_2K,
+        "FHD_1080p": VideoQuality.FHD_1080p,
+        "HD_720p": VideoQuality.HD_720p,
+        "SD_480p": VideoQuality.SD_480p,
+        "SD_360p": VideoQuality.SD_360p,
+    }.get(mode, VideoQuality.SD_480p)
