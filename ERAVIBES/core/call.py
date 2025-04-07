@@ -37,7 +37,7 @@ from ERAVIBES.utils.database import (
     set_loop,
 )
 from ERAVIBES.utils.exceptions import AssistantErr
-from ERAVIBES.utils.inline.play import stream_markup, telegram_markup
+from ERAVIBES.utils.inline.play import stream_markup
 from ERAVIBES.utils.stream.autoclear import auto_clean
 from ERAVIBES.utils.thumbnails import get_thumb
 from strings import get_string
@@ -358,7 +358,7 @@ class Call(PyTgCalls):
                         text=_["call_7"],
                     )
                 img = await gen_thumb(videoid)
-                button = telegram_markup(_, chat_id)
+                button = stream_markup(_, chat_id)
                 run = await app.send_photo(
                     original_chat_id,
                     photo=img,
@@ -448,7 +448,7 @@ class Call(PyTgCalls):
                         original_chat_id,
                         text=_["call_7"],
                     )
-                button = telegram_markup(_, chat_id)
+                button = stream_markup(_, chat_id)
                 run = await app.send_photo(
                     original_chat_id,
                     photo=config.STREAM_IMG_URL,
@@ -494,7 +494,7 @@ class Call(PyTgCalls):
                         text=_["call_7"],
                     )
                 if videoid == "telegram":
-                    button = telegram_markup(_, chat_id)
+                    button = stream_markup(_, chat_id)
                     run = await app.send_photo(
                         original_chat_id,
                         photo=(
@@ -510,7 +510,7 @@ class Call(PyTgCalls):
                     db[chat_id][0]["mystic"] = run
                     db[chat_id][0]["markup"] = "tg"
                 elif videoid == "soundcloud":
-                    button = telegram_markup(_, chat_id)
+                    button = stream_markup(_, chat_id)
                     run = await app.send_photo(
                         original_chat_id,
                         photo=config.SOUNCLOUD_IMG_URL,
