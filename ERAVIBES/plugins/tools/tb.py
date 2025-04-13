@@ -1,6 +1,6 @@
 import os
 import requests
-from pyrogram import filters
+from pyrogram import Client, filters
 from pyrogram.types import Message
 from pyrogram.errors import RPCError
 import time
@@ -49,7 +49,7 @@ async def download_file(url: str, file_name: str, message: Message):
             os.remove(file_name)
 
 @app.on_message(filters.command("tg"))
-async def handle_terabox(client: Client, message: Message):
+async def handle_terabox(client, message: Message):
     # Check if URL is provided
     if len(message.command) < 2:
         await message.reply_text("Please provide a Terabox URL after the /tg command.")
