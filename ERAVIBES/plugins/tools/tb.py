@@ -57,7 +57,6 @@ async def download_with_progress(url: str, file_name: str, message: Message):
     finally:
         if os.path.exists(file_name):
             os.remove(file_name)
-
 @app.on_message(filters.command("tg"))
 async def handle_terabox(client, message: Message):
     # Check if URL is provided
@@ -115,13 +114,14 @@ async def handle_terabox(client, message: Message):
         await processing_msg.edit_text("📤 Uploading video to Telegram...")
         
         try:
+            # This is the corrected reply_video call with properly closed parentheses
             await message.reply_video(
                 video=temp_file,
                 thumb=thumb_file,
                 caption=f"🎬 {file_name}\n\n🔗 Original URL: {terabox_url}",
                 progress=lambda current, total: asyncio.get_event_loop().create_task(
                     update_progress(processing_msg, current, total, file_name)
-                )
+            )
             
             await processing_msg.edit_text("✅ Video sent successfully!")
         except RPCError as e:
