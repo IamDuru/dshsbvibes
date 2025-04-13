@@ -91,9 +91,7 @@ async def handle_terabox(client, message: Message):
         thumb_file = None
         if thumb_url:
             try:
-                thumb_response = requests.get(thumb_url, headers={
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-                })
+                thumb_response = requests.get(thumb_url)
                 thumb_response.raise_for_status()
                 thumb_file = "thumbnail.jpg"
                 with open(thumb_file, 'wb') as f:
@@ -105,12 +103,11 @@ async def handle_terabox(client, message: Message):
         # Update status
         await processing_msg.edit_text(f"📥 Preparing to download...\n\n📁 {file_name}\n📦 Size: {size}")
         
-        # Temporary file name (sanitize filename)
-        safe_file_name = "".join(c for c in file_name if c.isalnum() or c in (' ', '.', '_', '-')).rstrip()
-        temp_file = f"temp_{safe_file_name}"
+        # Temporary file name
+        temp_file = f"temp_{file_name}"
         
-        # Download the video with proper headers
-        success = await download_with_progress(direct_link, temp_file, message)
+        # Download the video
+        success = await download_file(direct_link, temp_file, message)
         if not success:
             return
         
@@ -138,7 +135,7 @@ async def handle_terabox(client, message: Message):
             os.remove(temp_file)
         if thumb_file and os.path.exists(thumb_file):
             os.remove(thumb_file)
-
+            
 async def update_progress(message: Message, current: int, total: int, file_name: str):
     progress = (current / total) * 100
     try:
