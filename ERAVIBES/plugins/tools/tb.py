@@ -10,13 +10,21 @@ from ERAVIBES import app
 # Terabox API endpoint
 TERABOX_API = "https://terabox.udayscriptsx.workers.dev/?url="
 
-async def download_file(url: str, file_name: str, message: Message):
+async def download_with_progress(url: str, file_name: str, message: Message):
     try:
+        # Create a session with headers to mimic a browser request
+        session = requests.Session()
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Referer': 'https://www.terabox.com/',
+            'Accept': '*/*',
+        }
+        
         # Send initial downloading status
         status_msg = await message.reply_text(f"📥 Downloading video...\n\n{file_name}")
         
-        # Download the file
-        response = requests.get(url, stream=True)
+        # Download the file with headers and cookies
+        response = session.get(url, headers=headers, stream=True)
         response.raise_for_status()
         
         total_size = int(response.headers.get('content-length', 0))
@@ -24,7 +32,7 @@ async def download_file(url: str, file_name: str, message: Message):
         start_time = time.time()
         
         with open(file_name, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=1024):
+            for chunk in response.iter_content(chunk_size=1024*1024):  # 1MB chunks
                 if chunk:
                     f.write(chunk)
                     downloaded_size += len(chunk)
@@ -32,11 +40,13 @@ async def download_file(url: str, file_name: str, message: Message):
                     # Update progress every 5 seconds
                     if time.time() - start_time > 5:
                         progress = (downloaded_size / total_size) * 100
+                        speed = (downloaded_size / (time.time() - start_time)) / (1024*1024)
                         await status_msg.edit_text(
                             f"📥 Downloading video...\n\n"
                             f"📁 {file_name}\n"
+                            f"📦 Size: {total_size/(1024*1024):.2f} MB\n"
                             f"📊 Progress: {progress:.2f}%\n"
-                            f"⚡ Speed: {(downloaded_size / (time.time() - start_time)) / 1024:.2f} KB/s"
+                            f"⚡ Speed: {speed:.2f} MB/s"
                         )
                         start_time = time.time()
         
@@ -81,7 +91,9 @@ async def handle_terabox(client, message: Message):
         thumb_file = None
         if thumb_url:
             try:
-                thumb_response = requests.get(thumb_url)
+                thumb_response = requests.get(thumb_url, headers={
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                })
                 thumb_response.raise_for_status()
                 thumb_file = "thumbnail.jpg"
                 with open(thumb_file, 'wb') as f:
@@ -93,11 +105,12 @@ async def handle_terabox(client, message: Message):
         # Update status
         await processing_msg.edit_text(f"📥 Preparing to download...\n\n📁 {file_name}\n📦 Size: {size}")
         
-        # Temporary file name
-        temp_file = f"temp_{file_name}"
+        # Temporary file name (sanitize filename)
+        safe_file_name = "".join(c for c in file_name if c.isalnum() or c in (' ', '.', '_', '-')).rstrip()
+        temp_file = f"temp_{safe_file_name}"
         
-        # Download the video
-        success = await download_file(direct_link, temp_file, message)
+        # Download the video with proper headers
+        success = await download_with_progress(direct_link, temp_file, message)
         if not success:
             return
         
@@ -112,7 +125,6 @@ async def handle_terabox(client, message: Message):
                 progress=lambda current, total: asyncio.get_event_loop().create_task(
                     update_progress(processing_msg, current, total, file_name)
                 )
-            )
             
             await processing_msg.edit_text("✅ Video sent successfully!")
         except RPCError as e:
@@ -133,6 +145,7 @@ async def update_progress(message: Message, current: int, total: int, file_name:
         await message.edit_text(
             f"📤 Uploading video...\n\n"
             f"📁 {file_name}\n"
+            f"📦 Size: {total/(1024*1024):.2f} MB\n"
             f"📊 Progress: {progress:.2f}%"
         )
     except:
