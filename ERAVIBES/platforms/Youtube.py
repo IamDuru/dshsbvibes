@@ -1,4 +1,5 @@
 import asyncio
+import aiohttp
 import os
 import re
 import json
@@ -7,7 +8,6 @@ import glob
 import logging
 from typing import Union
 
-import requests
 import yt_dlp
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
@@ -15,7 +15,7 @@ from youtubesearchpython.__future__ import VideosSearch
 from ERAVIBES.utils.database import is_on_off
 from ERAVIBES.utils.formatters import time_to_seconds
 
-# Global caching for cookie file path
+# Global caching for cookie file path taaki baar baar folder scan na ho
 _cached_cookie = None
 
 def cookie_txt_file():
@@ -93,10 +93,7 @@ class YouTubeAPI:
     async def exists(self, link: str, videoid: Union[bool, str] = None):
         if videoid:
             link = self.base + link
-        if re.search(self.regex, link):
-            return True
-        else:
-            return False
+        return bool(re.search(self.regex, link))
 
     async def url(self, message_1: Message) -> Union[str, None]:
         messages = [message_1]
@@ -104,6 +101,7 @@ class YouTubeAPI:
             messages.append(message_1.reply_to_message)
         text = ""
         offset = None
+        length = None
         for message in messages:
             if offset is not None:
                 break
@@ -223,7 +221,6 @@ class YouTubeAPI:
         if "&" in link:
             link = link.split("&")[0]
         ytdl_opts = {"quiet": True, "cookiefile": cookie_txt_file()}
-        # Run synchronous yt_dlp extract_info in a background thread to avoid blocking
         def extract_info():
             with yt_dlp.YoutubeDL(ytdl_opts) as ydl:
                 return ydl.extract_info(link, download=False)
@@ -278,41 +275,39 @@ class YouTubeAPI:
 
         loop = asyncio.get_running_loop()
 
-        # Synchronous function for audio download using API
-        def audio_dl():
-            err = False
+        # Asynchronous audio download using aiohttp (non-blocking network I/O)
+        async def audio_dl():
             try:
-                res = requests.get(f"https://yt.okflix.top/api/{vid_id}")
-                response = res.json()
-                if response.get('status') == 'success':
-                    fpath = f"downloads/{vid_id}.mp3"
-                    if os.path.exists(fpath):
-                        return fpath
-                    download_link = response.get('download_link')
-                    data = requests.get(download_link)
-                    if data.status_code == 200:
-                        with open(fpath, "wb") as f:
-                            f.write(data.content)
-                        return fpath
-                err = True
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(f"https://yt.okflix.top/api/{vid_id}") as resp:
+                        response = await resp.json()
+                    if response.get('status') == 'success':
+                        fpath = f"downloads/{vid_id}.mp3"
+                        if os.path.exists(fpath):
+                            return fpath
+                        download_link = response.get('download_link')
+                        async with session.get(download_link) as data_resp:
+                            if data_resp.status == 200:
+                                content = await data_resp.read()
+                                with open(fpath, "wb") as f:
+                                    f.write(content)
+                                return fpath
             except Exception as e:
                 print(e)
-                err = True
-            if err:
-                ydl_opts = {
-                    "format": "bestaudio/best",
-                    "outtmpl": "downloads/%(id)s.%(ext)s",
-                    "geo_bypass": True,
-                    "nocheckcertificate": True,
-                    "quiet": True,
-                    "cookiefile": cookie_txt_file(),
-                    "no_warnings": True,
-                }
-                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    info = ydl.extract_info(link, download=False)
-                return info['url']
+            # Fallback synchronous method via yt_dlp extraction if async fails
+            ydl_opts = {
+                "format": "bestaudio/best",
+                "outtmpl": "downloads/%(id)s.%(ext)s",
+                "geo_bypass": True,
+                "nocheckcertificate": True,
+                "quiet": True,
+                "cookiefile": cookie_txt_file(),
+                "no_warnings": True,
+            }
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(link, download=False)
+            return info['url']
 
-        # Synchronous function for video download
         def video_dl():
             ydl_opts = {
                 "format": "(bestvideo[height<=?720][width<=?1280][ext=mp4])+(bestaudio[ext=m4a])",
@@ -331,7 +326,6 @@ class YouTubeAPI:
             ydl.download([link])
             return xyz
 
-        # Synchronous function for song video download
         def song_video_dl():
             formats_opt = f"{format_id}+140"
             fpath = f"downloads/{title}"
@@ -349,7 +343,6 @@ class YouTubeAPI:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([link])
 
-        # Synchronous function for song audio download
         def song_audio_dl():
             fpath = f"downloads/{title}.%(ext)s"
             ydl_opts = {
@@ -372,16 +365,14 @@ class YouTubeAPI:
 
         if songvideo:
             await loop.run_in_executor(None, song_video_dl)
-            fpath = f"downloads/{title}.mp4"
-            return fpath
+            return f"downloads/{title}.mp4"
         elif songaudio:
             await loop.run_in_executor(None, song_audio_dl)
-            fpath = f"downloads/{title}.mp3"
-            return fpath
+            return f"downloads/{title}.mp3"
         elif video:
             if await is_on_off(1):
-                direct = True
                 downloaded_file = await loop.run_in_executor(None, video_dl)
+                direct = True
             else:
                 proc = await asyncio.create_subprocess_exec(
                     "yt-dlp",
@@ -406,9 +397,9 @@ class YouTubeAPI:
                     if total_size_mb > 250:
                         print(f"File size {total_size_mb:.2f} MB exceeds the 100MB limit.")
                         return None
-                    direct = True
                     downloaded_file = await loop.run_in_executor(None, video_dl)
+                    direct = True
         else:
+            downloaded_file = await audio_dl()
             direct = True
-            downloaded_file = await loop.run_in_executor(None, audio_dl)
         return downloaded_file, direct
