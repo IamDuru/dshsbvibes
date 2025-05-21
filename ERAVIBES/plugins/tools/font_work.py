@@ -13,37 +13,38 @@ def custom_smallcap(text):
     return ''.join([char_map.get(c, c) for c in text])
 
 @app.on_message(filters.command(["work", "w"], prefixes=["/", "!", ".", ""]))
-async def style_buttons(c, m, cb=False):
-    if cb:
-        text = m.message.reply_to_message.text.split(' ', 1)[1]
-    else:
+async def work_command(c, m):
+    try:
         text = m.text.split(' ', 1)[1]
+    except IndexError:
+        await m.reply_text("Please provide some text after the command.")
+        return
     
     buttons = [
-        [InlineKeyboardButton("ꜱᴀꜰᴇ", callback_data="style+custom_smallcap")],
+        [InlineKeyboardButton("ꜱᴀꜰᴇ", callback_data="safe_style")],
         [InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="close_reply")]
     ]
     
-    if not cb:
-        await m.reply_text(
-            f"<code>{text}</code>", reply_markup=InlineKeyboardMarkup(buttons), quote=True
-        )
-    else:
-        await m.answer()
-        await m.message.edit_text(f"<code>{text}</code>", reply_markup=InlineKeyboardMarkup(buttons))
+    await m.reply_text(
+        f"<code>{text}</code>", 
+        reply_markup=InlineKeyboardMarkup(buttons), 
+        quote=True
+    )
 
-@app.on_callback_query(filters.regex("^style"))
-async def style(c, m):
+@app.on_callback_query(filters.regex("^safe_style"))
+async def safe_style_callback(c, m):
     await m.answer()
-    cmd, style_type = m.data.split('+')
-    text = m.message.reply_to_message.text.split(" ", 1)[1]
-    
-    if style_type == "custom_smallcap":
-        new_text = custom_smallcap(text)
-    else:
-        new_text = text  # Fallback for unknown styles
-    
     try:
-        await m.message.edit_text(f"<code>{new_text}</code>", reply_markup=m.message.reply_markup)
+        text = m.message.reply_to_message.text.split(' ', 1)[1]
+        new_text = custom_smallcap(text)
+        await m.message.edit_text(
+            f"<code>{new_text}</code>",
+            reply_markup=m.message.reply_markup
+        )
     except Exception as e:
-        print(f"Error editing message: {e}")
+        print(f"Error in safe_style_callback: {e}")
+        await m.answer("Error processing your request", show_alert=True)
+
+@app.on_callback_query(filters.regex("^close_reply"))
+async def close_reply(c, m):
+    await m.message.delete()
