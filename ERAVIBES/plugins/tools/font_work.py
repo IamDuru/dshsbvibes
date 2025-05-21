@@ -4,10 +4,13 @@ from ERAVIBES import app
 
 def custom_smallcap(text):
     char_map = {
-        'A': 'ᴧ', 'N': 'η', 'M': 'ϻ', 'O': 'σ', 'E': 'є', 'I': '¡',
-        'a': 'ᴧ', 'b': 'ʙ', 'c': 'ᴄ', 'd': 'ᴅ', 'e': 'є', 'f': 'ꜰ', 'g': 'ɢ', 'h': 'ʜ', 
-        'i': '¡', 'j': 'ᴊ', 'k': 'ᴋ', 'l': 'ʟ', 'm': 'ϻ', 'n': 'η', 'o': 'σ', 'p': 'ᴘ', 
-        'q': 'ǫ', 'r': 'ʀ', 's': 'ꜱ', 't': 'ᴛ', 'u': 'ᴜ', 'v': 'ᴠ', 'w': 'ᴡ', 'x': 'x', 
+        'A': 'ᴧ', 'B': 'ʙ', 'C': 'ᴄ', 'D': 'ᴅ', 'E': 'є', 'F': 'ꜰ', 'G': 'ɢ', 'H': 'ʜ',
+        'I': 'ɪ', 'J': 'ᴊ', 'K': 'ᴋ', 'L': 'ʟ', 'M': 'ϻ', 'N': 'η', 'O': 'σ', 'P': 'ᴘ',
+        'Q': 'ǫ', 'R': 'ʀ', 'S': 'ꜱ', 'T': 'ᴛ', 'U': 'ᴜ', 'V': 'ᴠ', 'W': 'ᴡ', 'X': 'x',
+        'Y': 'ʏ', 'Z': 'ᴢ',
+        'a': 'ᴧ', 'b': 'ʙ', 'c': 'ᴄ', 'd': 'ᴅ', 'e': 'є', 'f': 'ꜰ', 'g': 'ɢ', 'h': 'ʜ',
+        'i': 'ɪ', 'j': 'ᴊ', 'k': 'ᴋ', 'l': 'ʟ', 'm': 'ϻ', 'n': 'η', 'o': 'σ', 'p': 'ᴘ',
+        'q': 'ǫ', 'r': 'ʀ', 's': 'ꜱ', 't': 'ᴛ', 'u': 'ᴜ', 'v': 'ᴠ', 'w': 'ᴡ', 'x': 'x',
         'y': 'ʏ', 'z': 'ᴢ'
     }
     return ''.join([char_map.get(c, c) for c in text])
@@ -35,8 +38,14 @@ async def work_command(c, m):
 async def safe_style_callback(c, m):
     await m.answer()
     try:
-        text = m.message.reply_to_message.text.split(' ', 1)[1]
-        new_text = custom_smallcap(text)
+        original_message_text = m.message.reply_to_message.text
+        if original_message_text.startswith(('/', '!', '.')):
+            text_to_convert = original_message_text.split(' ', 1)[1]
+        else:
+            text_to_convert = original_message_text
+
+        new_text = custom_smallcap(text_to_convert)
+        
         await m.message.edit_text(
             f"<code>{new_text}</code>",
             reply_markup=m.message.reply_markup
