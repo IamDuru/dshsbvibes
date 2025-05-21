@@ -1,6 +1,5 @@
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
 from ERAVIBES import app
 
 def custom_smallcap(text):
@@ -21,12 +20,8 @@ async def style_buttons(c, m, cb=False):
         text = m.text.split(' ', 1)[1]
     
     buttons = [
-        [
-            InlineKeyboardButton("ꜱᴀꜰᴇ", callback_data="style+custom_smallcap")
-        ],
-        [
-            InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="close_reply")
-        ]
+        [InlineKeyboardButton("ꜱᴀꜰᴇ", callback_data="style+custom_smallcap")],
+        [InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="close_reply")]
     ]
     
     if not cb:
@@ -40,15 +35,15 @@ async def style_buttons(c, m, cb=False):
 @app.on_callback_query(filters.regex("^style"))
 async def style(c, m):
     await m.answer()
-    cmd, style = m.data.split('+')
+    cmd, style_type = m.data.split('+')
     text = m.message.reply_to_message.text.split(" ", 1)[1]
     
-    if style == "custom_smallcap":
+    if style_type == "custom_smallcap":
         new_text = custom_smallcap(text)
     else:
-        new_text = text
+        new_text = text  # Fallback for unknown styles
     
     try:
         await m.message.edit_text(f"<code>{new_text}</code>", reply_markup=m.message.reply_markup)
-    except:
-        pass
+    except Exception as e:
+        print(f"Error editing message: {e}")
