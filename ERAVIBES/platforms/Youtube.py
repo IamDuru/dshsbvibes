@@ -103,9 +103,8 @@ class YouTubeAPI:
                         return entity.url
         return None
 
-    # Re-introducing 'url' method for backward compatibility
+    # 'url' method for backward compatibility, now without the warning
     async def url(self, message: Message) -> Union[str, None]:
-        logging.warning("Deprecated: 'YouTubeAPI.url' is deprecated. Please use 'YouTubeAPI.extract_url_from_message' instead.")
         return await self.extract_url_from_message(message)
 
     async def get_video_details(self, link: str) -> Tuple[str, str, int, str, str]:
