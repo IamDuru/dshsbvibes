@@ -103,7 +103,7 @@ class YouTubeAPI:
                         return entity.url
         return None
 
-    # 'url' method for backward compatibility, now without the warning
+    # 'url' method for backward compatibility
     async def url(self, message: Message) -> Union[str, None]:
         return await self.extract_url_from_message(message)
 
