@@ -86,6 +86,7 @@ class YouTubeAPI:
     async def is_youtube_link(self, link: str) -> bool:
         return bool(self.youtube_regex.search(link))
 
+    # Renamed from 'url' to 'extract_url_from_message' for clarity and consistency
     async def extract_url_from_message(self, message: Message) -> Union[str, None]:
         messages_to_check = [message]
         if message.reply_to_message:
