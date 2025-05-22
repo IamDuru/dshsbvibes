@@ -86,7 +86,6 @@ class YouTubeAPI:
     async def is_youtube_link(self, link: str) -> bool:
         return bool(self.youtube_regex.search(link))
 
-    # Renamed from 'url' to 'extract_url_from_message' for clarity and consistency
     async def extract_url_from_message(self, message: Message) -> Union[str, None]:
         messages_to_check = [message]
         if message.reply_to_message:
@@ -103,6 +102,11 @@ class YouTubeAPI:
                     if entity.type == MessageEntityType.TEXT_LINK:
                         return entity.url
         return None
+
+    # Re-introducing 'url' method for backward compatibility
+    async def url(self, message: Message) -> Union[str, None]:
+        logging.warning("Deprecated: 'YouTubeAPI.url' is deprecated. Please use 'YouTubeAPI.extract_url_from_message' instead.")
+        return await self.extract_url_from_message(message)
 
     async def get_video_details(self, link: str) -> Tuple[str, str, int, str, str]:
         search_result = await _get_video_search_results(link)
