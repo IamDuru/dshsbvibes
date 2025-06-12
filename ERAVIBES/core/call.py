@@ -48,7 +48,7 @@ from ERAVIBES.utils.database import (
 from ERAVIBES.utils.exceptions import AssistantErr
 from ERAVIBES.utils.inline.play import stream_markup, stream_markup
 from ERAVIBES.utils.stream.autoclear import auto_clean
-from ERAVIBES.utils.thumbnails import gen_thumb
+from ERAVIBES.utils.thumbnails import get_thumb
 
 links = {}
 logger = logging.getLogger(__name__)
