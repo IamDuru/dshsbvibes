@@ -9,9 +9,13 @@ from pytgcalls import PyTgCalls, StreamType
 from pytgcalls.exceptions import (
     AlreadyJoinedError,
     NoActiveGroupCall,
+    # TelegramServerError # Ye line hata di gayi hai
 )
-from pytgcalls.types import Update
-from pytgcalls.types.input_stream import AudioPiped, AudioVideoPiped
+from pytgcalls.types import ( # Import path update kiya gaya hai
+    AudioPiped,
+    AudioVideoPiped,
+    Update,
+)
 from pytgcalls.types.input_stream.quality import HighQualityAudio, MediumQualityVideo
 from pytgcalls.types.stream import StreamAudioEnded
 
@@ -314,7 +318,7 @@ class Call(PyTgCalls):
             raise AssistantErr(_["call_8"])
         except AlreadyJoinedError:
             raise AssistantErr(_["call_9"])
-        except Exception: # TelegramServerError ki jagah general Exception
+        except Exception:
             raise AssistantErr(_["call_10"])
 
         await add_active_chat(chat_id)
