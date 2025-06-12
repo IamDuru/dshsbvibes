@@ -17,9 +17,7 @@ class Saavn:
 
     @staticmethod
     async def is_song(url: str) -> bool:
-        return "song" in url and "/featured/" not in url and "/album/" not in url
-
-    @staticmethod
+        return "song" in url and "/featured/" not in url and "/album/" not in url    @staticmethod
     async def is_playlist(url: str) -> bool:
         return "/featured/" in url or "/album" in url
 
@@ -28,8 +26,7 @@ class Saavn:
             url = url.split("#")[0]
         return url
 
-    @asyncify
-    def playlist(self, url, limit):
+    async def playlist(self, url, limit):
         clean_url = self.clean_url(url)
         ydl_opts = {
             "extract_flat": True,
