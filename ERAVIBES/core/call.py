@@ -9,15 +9,12 @@ from pytgcalls import PyTgCalls, StreamType
 from pytgcalls.exceptions import (
     AlreadyJoinedError,
     NoActiveGroupCall,
-    # TelegramServerError # Ye line hata di gayi hai
+    # TelegramServerError # Ye line ab bhi hata di gayi hai
 )
-from pytgcalls.types import (
-    AudioPiped,
-    AudioVideoPiped,
-    Update,
-)
-from pytgcalls.types.input_stream.quality import HighQualityAudio, MediumQualityVideo # Import path update kiya gaya hai
-from pytgcalls.types.stream import StreamAudioEnded
+from pytgcalls.types import Update
+from pytgcalls.types.input_stream import AudioPiped, AudioVideoPiped # py-tgcalls 2.x.x ke liye ye path phir se sahi ho gaya hai
+from pytgcalls.types.input_stream.quality import HighQualityAudio, MediumQualityVideo
+from pytgcalls.types.stream import StreamAudioEnded # Ye path abhi bhi sahi hai
 
 import config
 from ERAVIBES import LOGGER, YouTube, app
