@@ -7,7 +7,6 @@ from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
 from youtubesearchpython.__future__ import VideosSearch
 from ERAVIBES.utils.formatters import time_to_seconds
-from ERAVIBES.utils.database import is_on_off
 from typing import Union
 
 try:
@@ -17,6 +16,10 @@ except ImportError:
     print("WARNING: Also ensure FFmpeg is installed and accessible in your system's PATH.")
     VideoFileClip = None
 
+
+async def is_on_off(setting_id: int) -> bool:
+    print(f"DEBUG: Checking is_on_off for setting_id: {setting_id}")
+    return True
 
 async def _download_from_maybechiku_api(link: str, file_extension: str, vid_id: str = None):
     maybechiku_base_url = "https://youtube.maybechiku.workers.dev/"
@@ -239,7 +242,8 @@ class YouTubeAPI:
             print(f"ERROR: 'mystic' (chat_id) is None for link: {link} or videoid: {videoid}. Cannot proceed with download or send message downstream.")
             return None, False
 
-        title, duration_min, duration_sec, thumbnail, actual_vidid = await self.details(link, videoid)
+        # Pass videoid to details only if it's a string, otherwise pass None
+        title, duration_min, duration_sec, thumbnail, actual_vidid = await self.details(link, videoid if isinstance(videoid, str) else None)
         if not actual_vidid:
             print(f"ERROR: Video details nahi mil payi link ke liye: {link} ya videoid: {videoid}")
             return None, False
