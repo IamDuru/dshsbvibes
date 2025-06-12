@@ -9,39 +9,40 @@ def stream_markup_timer(_, chat_id, played, dur):
     duration_sec = time_to_seconds(dur)
     percentage = (played_sec / duration_sec) * 100
     umm = math.floor(percentage)
-    if 0 < umm <= 10:
-        bar = "▰▱▱▱▱▱▱▱▱▱"
-    elif 10 < umm < 20:
-        bar = "▰▰▱▱▱▱▱▱▱▱"
-    elif 20 <= umm < 30:
-        bar = "▰▰▰▱▱▱▱▱▱▱"
-    elif 30 <= umm < 40:
-        bar = "▰▰▰▰▱▱▱▱▱▱"
-    elif 40 <= umm < 50:
-        bar = "▰▰▰▰▰▱▱▱▱▱"
-    elif 50 <= umm < 60:
-        bar = "▰▰▰▰▰▰▱▱▱▱"
-    elif 60 <= umm < 70:
-        bar = "▰▰▰▰▰▰▰▱▱▱"
-    elif 70 <= umm < 80:
-        bar = "▰▰▰▰▰▰▰▰▱▱"
-    elif 80 <= umm < 95:
-        bar = "▰▰▰▰▰▰▰▰▰▱"
+    # Fun and engaging sentences with progress bar
+    if 10 < umm <= 20:
+        bar = "💞 ᴄʟɪᴄᴋ ᴛᴏ ᴀᴅᴅ ɪɴ ᴄʜᴀɴɴᴇʟs 💞"
+    elif 20 <= umm < 35:
+        bar = "🎄 ᴛᴀᴘ ᴛᴏ ᴇɴᴛᴇʀ ᴍᴏʀᴇ ɢʀᴏᴜᴘs 🎄"
+    elif 35 <= umm < 50:
+        bar = "🎁 ᴄʟɪᴄᴋ ᴛᴏ ᴀᴅᴅ ɪɴ ɴᴇᴡ ᴄʜᴀᴛ 🎁"
+    elif 50 <= umm < 75:
+        bar = "⚜️ ᴛᴀᴘ ʜᴇʀᴇ ғᴏʀ ᴄʜᴀᴛ ɪɴᴠɪᴛᴇ ⚜️"
+    elif 75 <= umm < 80:
+        bar = "🔥 ᴄʟɪᴄᴋ ᴛᴏ ᴀᴄᴄᴇss ɪɴ ɢʀᴏᴜᴘ 🔥"
+    elif 80 <= umm < 85:
+        bar = "🌟 ᴛᴀᴘ ᴛᴏ ᴇxᴘʟᴏʀᴇ ᴍᴏʀᴇ ᴄʜᴀᴛ 🌟"
+    elif 85 <= umm < 90:
+        bar = "🐥ᴄʟɪᴄᴋ ᴛᴏ ᴀᴅᴅ ɴᴇᴡ ᴄʜᴀᴛ ʀᴏᴏᴍ🐥"
+    elif 90 <= umm < 95:
+        bar = "❣️ᴛᴀᴘ ᴛᴏ ᴀᴅᴅ ᴅɪғғᴇʀᴇɴᴛ ɢʀᴏᴜᴘ❣️"
+    elif 95 <= umm < 100:
+        bar = "⚡ᴄʟɪᴄᴋ ғᴏʀ ɢᴇᴛ ᴀᴅᴅ ɪɴ ᴄʜᴀᴛs⚡"
     else:
-        bar = "▰▰▰▰▰▰▰▰▰▰"
-
+        bar = "✨ ᴛᴀᴘ ʜᴇʀᴇ ᴛᴏ ɢʀᴏᴜᴘ ɪɴᴠɪᴛᴇs ✨"
     buttons = [
-        # Row 1: Progress bar with timing
         [
             InlineKeyboardButton(
-                text=f"{played.lower()}  {bar}  {dur.lower()}",
-                callback_data="GetTimer"
+                text=f"{bar}",
+                url=f"https://t.me/{app.username}?startgroup=true",
             )
         ],
         [
-            InlineKeyboardButton(text="❚❚", callback_data=f"ADMIN Pause|{chat_id}"),
-            InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close"),
+            InlineKeyboardButton(text="❚❚", callback_data=f"ADMIN Pause|{chat_id}"),            
             InlineKeyboardButton(text="ᐅ", callback_data=f"ADMIN Resume|{chat_id}"),
+        ],
+        [
+            InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close"),
         ],
     ]
     return buttons
@@ -51,11 +52,13 @@ def stream_markup_timer(_, chat_id, played, dur):
 
 def stream_markup(_, chat_id):
     buttons = [
-          [
-            InlineKeyboardButton(text="❚❚", callback_data=f"ADMIN Pause|{chat_id}"),
-            InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close"),
+        [
+            InlineKeyboardButton(text="❚❚", callback_data=f"ADMIN Pause|{chat_id}"),            
             InlineKeyboardButton(text="ᐅ", callback_data=f"ADMIN Resume|{chat_id}"),
-          ],
+        ],
+        [
+            InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close"),
+        ],
     ]
     return buttons
 
