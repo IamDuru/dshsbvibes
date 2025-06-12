@@ -22,8 +22,8 @@ pytube
 pykeyboard
 unidecode
 pyromod
-py-tgcalls==2.0.6
-ntgcalls==1.2.3
+py-tgcalls==1.10.0
+ntgcalls==1.1.2
 python-dotenv
 pyyaml
 requests
