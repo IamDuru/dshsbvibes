@@ -12,9 +12,6 @@ import random
 
 from pytgcalls import PyTgCalls
 
-from YukkiMusic import userbot
-from YukkiMusic.core.mongo import mongodb
-
 
 
 afkdb = db.afk
