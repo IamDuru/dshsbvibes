@@ -7,4 +7,11 @@ from .Spotify import SpotifyAPI
 from .Telegram import TeleAPI
 from .Youtube import YouTubeAPI
 
+apple = AppleAPI()
+carbon = CarbonAPI()
 saavn = Saavn()
+resso = RessoAPI()
+soundcloud = SoundCloudAPI()
+spotify = SpotifyAPI()
+telegram = TelegramAPI()
+youtube = YouTubeAPI()
