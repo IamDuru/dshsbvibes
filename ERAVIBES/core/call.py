@@ -1,48 +1,54 @@
-import asyncio, os
-from datetime import datetime, timedelta
-from typing import Union
+import asyncio
+import logging
+import traceback
 
-from pyrogram import Client
+from ntgcalls import TelegramServerError
+from pyrogram.enums import ChatMemberStatus
+from pyrogram.errors import (
+    ChannelsTooMuch,
+    ChatAdminRequired,
+    FloodWait,
+    InviteRequestSent,
+    UserAlreadyParticipant,
+    UserNotParticipant,
+)
 from pyrogram.types import InlineKeyboardMarkup
 from pytgcalls import PyTgCalls, filters
-from pytgcalls.errors import (
-    AlreadyJoinedError,
-    NoActiveGroupCall,
-)
-from ntgcalls import TelegramServerError
+from pytgcalls.exceptions import NoActiveGroupCall
 from pytgcalls.types import (
-    GroupCallParticipant,
+    ChatUpdate,
+    GroupCallConfig,
     MediaStream,
-    ChatUpdate, 
-    Update,
-    AudioStreamEnded
-)
-from pytgcalls.types import (
-    AudioQuality, 
-    VideoQuality,
+    StreamEnded,
 )
 
 import config
-from ERAVIBES import LOGGER, YouTube, app
+from strings import get_string
+from ERAVIBES import app, userbot
+from ERAVIBES.core.userbot import assistants
 from ERAVIBES.misc import db
+from ERAVIBES.platforms import saavn, youtube
+from ERAVIBES.utils import fallback
 from ERAVIBES.utils.database import (
     add_active_chat,
     add_active_video_chat,
+    get_active_chats,
+    get_assistant,
+    get_audio_bitrate,
     get_lang,
     get_loop,
+    get_video_bitrate,
     group_assistant,
-    is_autoend,
     music_on,
     remove_active_chat,
     remove_active_video_chat,
+    set_assistant,
     set_loop,
 )
 from ERAVIBES.utils.exceptions import AssistantErr
-from ERAVIBES.utils.formatters import check_duration, seconds_to_min, speed_converter
-from ERAVIBES.utils.inline.play import stream_markup
+from ERAVIBES.utils.inline.play import stream_markup, telegram_markup
 from ERAVIBES.utils.stream.autoclear import auto_clean
-from ERAVIBES.utils.thumbnails import get_thumb
-from strings import get_string
+from ERAVIBES.utils.thumbnails import gen_thumb
 
 autoend = {}
 counter = {}
