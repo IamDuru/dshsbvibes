@@ -8,6 +8,15 @@ from ERAVIBES import userbot
 from ERAVIBES.core.mongo import mongodb
 from ERAVIBES.utils.mongo import db
 
+import random
+
+from pytgcalls import PyTgCalls
+
+from YukkiMusic import userbot
+from YukkiMusic.core.mongo import mongodb
+
+
+
 afkdb = db.afk
 authdb = mongodb.adminauth
 authuserdb = mongodb.authuser
@@ -86,6 +95,28 @@ async def rm_wlcm(chat_id: int):
     chat = await wlcm.find_one({"chat_id": chat_id})
     if chat: 
         return await wlcm.delete_one({"chat_id": chat_id})
+
+
+async def get_audio_bitrate(chat_id: int) -> str:
+    mode = audio.get(chat_id, "STUDIO")
+    return {
+        "STUDIO": _types.AudioQuality.STUDIO,
+        "HIGH": _types.AudioQuality.HIGH,
+        "MEDIUM": _types.AudioQuality.MEDIUM,
+        "LOW": _types.AudioQuality.LOW,
+    }.get(mode, _types.AudioQuality.STUDIO)
+
+
+async def get_video_bitrate(chat_id: int) -> str:
+    mode = video.get(chat_id, "UHD_4K")
+    return {
+        "UHD_4K": _types.VideoQuality.UHD_4K,
+        "QHD_2K": _types.VideoQuality.QHD_2K,
+        "FHD_1080p": _types.VideoQuality.FHD_1080p,
+        "HD_720p": _types.VideoQuality.HD_720p,
+        "SD_480p": _types.VideoQuality.SD_480p,
+        "SD_360p": _types.VideoQuality.SD_360p,
+    }.get(mode, _types.VideoQuality.UHD_4K)
 
 
 async def get_assistant_number(chat_id: int) -> str:
