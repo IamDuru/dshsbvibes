@@ -11,12 +11,12 @@ from pytgcalls.exceptions import (
     NoActiveGroupCall,
     # TelegramServerError # Ye line hata di gayi hai
 )
-from pytgcalls.types import ( # Import path update kiya gaya hai
+from pytgcalls.types import (
     AudioPiped,
     AudioVideoPiped,
     Update,
 )
-from pytgcalls.types.input_stream.quality import HighQualityAudio, MediumQualityVideo
+from pytgcalls.types.input_stream.quality import HighQualityAudio, MediumQualityVideo # Import path update kiya gaya hai
 from pytgcalls.types.stream import StreamAudioEnded
 
 import config
