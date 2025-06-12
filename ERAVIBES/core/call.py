@@ -8,8 +8,7 @@ from pyrogram.types import InlineKeyboardMarkup
 from pytgcalls import PyTgCalls, StreamType
 from pytgcalls.exceptions import (
     AlreadyJoinedError,
-    NoActiveGroupCall,
-    # TelegramServerError # Ye line ab bhi hata di gayi hai
+    NoActiveGroupCall
 )
 from pytgcalls.types import Update
 from pytgcalls.types.input_stream import AudioPiped, AudioVideoPiped # py-tgcalls 2.x.x ke liye ye path phir se sahi ho gaya hai
