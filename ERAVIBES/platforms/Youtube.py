@@ -7,63 +7,38 @@ from ERAVIBES.utils.database import is_on_off
 from typing import Union
 
 async def _download_from_maybechiku_api(link: str, file_extension: str, vid_id: str = None):
-    maybechiku_base_url = "https://youtube.maybechiku.workers.dev/"
+    maybechiku_base_url = "https://youtube.maybechiku.workers.dev/" 
     query_string = {"url": link}
-
     if not vid_id:
         match = re.search(r'(?:youtu\.be\/|youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})', link)
         if match:
             vid_id = match.group(1)
         else:
             vid_id = "unknown_id_" + str(hash(link))[:8]
-
     download_file_path = os.path.join("downloads", f"{vid_id}.mp4") 
-
     if os.path.exists(download_file_path):
         return download_file_path, True
-
     async with aiohttp.ClientSession() as session:
-        try:
-            async with session.get(maybechiku_base_url, params=query_string) as response:
-                response.raise_for_status()
-                data = await response.json()
-
-                if data.get('success') and data.get('data') and data['data'].get('downloadURL'):
-                    download_url = data['data']['downloadURL']
-                    
-                    async with session.get(download_url) as file_response:
-                        file_response.raise_for_status()
-                        
-                        os.makedirs("downloads", exist_ok=True)
-                        
-                        with open(download_file_path, "wb") as f:
-                            while True:
-                                chunk = await file_response.content.read(8192)
-                                if not chunk:
-                                    break
-                                f.write(chunk)
-                        print(f"INFO: Downloaded MP4 via Maybechiku API to: {download_file_path}")
-                        return download_file_path, True
-                else:
-                    print(f"ERROR: Maybechiku API reports failure or missing downloadURL for {link}: {data}")
-                    return None, False
-        except aiohttp.ClientError as e:
-            print(f"ERROR: Maybechiku API AIOHTTP error for {link}: {e}")
-            return None, False
-        except json.JSONDecodeError as e:
-            print(f"ERROR: Maybechiku API JSON decode error for {link}: {e}. Response was not valid JSON.")
-            return None, False
-        except Exception as e:
-            print(f"ERROR: An unexpected error occurred with Maybechiku API for {link}: {e}")
-            return None, False
+        async with session.get(maybechiku_base_url, params=query_string) as response:
+            data = await response.json()
+            if data.get('success') and data.get('data') and data['data'].get('downloadURL'):
+                download_url = data['data']['downloadURL']
+                async with session.get(download_url) as file_response:
+                    os.makedirs("downloads", exist_ok=True)
+                    with open(download_file_path, "wb") as f:
+                        while True:
+                            chunk = await file_response.content.read(8192)
+                            if not chunk:
+                                break
+                            f.write(chunk)
+                    return download_file_path, True
+            else:
+                return None, False
 
 async def _convert_mp4_to_mp3(mp4_file_path: str, mp3_output_path: str) -> bool:
     if not os.path.exists(mp4_file_path):
-        print(f"ERROR: MP4 file '{mp4_file_path}' conversion ke liye nahi mila.")
         return False
-
     loop = asyncio.get_running_loop()
-    
     def sync_convert():
         try:
             command = [
@@ -75,25 +50,13 @@ async def _convert_mp4_to_mp3(mp4_file_path: str, mp3_output_path: str) -> bool:
                 "-y",
                 mp3_output_path
             ]
-            
             result = subprocess.run(command, capture_output=True, text=True, check=True)
-            
             if result.returncode == 0:
-                print(f"INFO: Converted '{mp4_file_path}' to '{mp3_output_path}' using FFmpeg.")
                 return True
             else:
-                print(f"ERROR: FFmpeg conversion failed for '{mp4_file_path}'. Stderr: {result.stderr}")
                 return False
-        except FileNotFoundError:
-            print("ERROR: FFmpeg command nahi mila. Please ensure FFmpeg installed hai aur PATH mein hai.")
+        except Exception:
             return False
-        except subprocess.CalledProcessError as e:
-            print(f"ERROR: FFmpeg command fail ho gaya. Return Code: {e.returncode}, Output: {e.stdout}, Error: {e.stderr}")
-            return False
-        except Exception as e:
-            print(f"ERROR: MP4 se MP3 convert karte waqt unexpected error aayi: {e}")
-            return False
-
     success = await loop.run_in_executor(None, sync_convert)
     return success
 
@@ -114,11 +77,9 @@ class YouTubeAPI:
         messages = [message_1]
         if message_1.reply_to_message:
             messages.append(message_1.reply_to_message)
-        
         text = ""
         offset = None
         length = None
-        
         for message in messages:
             if offset:
                 break
@@ -132,7 +93,6 @@ class YouTubeAPI:
                 for entity in message.caption_entities:
                     if entity.type == "text_link":
                         return entity.url
-        
         if offset is None:
             return None
         return text[offset: offset + length]
@@ -142,14 +102,10 @@ class YouTubeAPI:
             link = self.base + videoid
         if "&" in link:
             link = link.split("&")[0]
-        
         results = VideosSearch(link, limit=1)
         results_dict = await results.next()
-        
         if not results_dict["result"]:
-            print(f"WARNING: No search results found for link: {link}")
             return None, None, None, None, None
-
         result = results_dict["result"][0]
         title = result["title"]
         duration_min = result["duration"]
@@ -198,11 +154,8 @@ class YouTubeAPI:
             link = link.split("&")[0]
         results = VideosSearch(link, limit=1)
         results_dict = await results.next()
-        
         if not results_dict["result"]:
-            print(f"WARNING: No track results found for link: {link}")
             return None, None
-
         result = results_dict["result"][0]
         track_details = {
             "title": result["title"],
@@ -218,15 +171,11 @@ class YouTubeAPI:
             link = self.base + videoid
         if "&" in link:
             link = link.split("&")[0]
-        
         a = VideosSearch(link, limit=10)
         results_dict = await a.next()
         result = results_dict.get("result")
-        
         if not result or query_type >= len(result) or query_type < 0:
-            print(f"WARNING: Invalid query_type ({query_type}) or no results for link: {link}")
             return None, None, None, None
-
         title = result[query_type]["title"]
         duration_min = result[query_type]["duration"]
         vidid = result[query_type]["id"]
@@ -235,75 +184,52 @@ class YouTubeAPI:
 
     async def download(self, link: str, mystic, videoid: Union[bool, str] = None, songvideo: bool = False, songaudio: bool = False, video: bool = False):
         if mystic is None:
-            print(f"ERROR: 'mystic' (chat_id) is None for link: {link} or videoid: {videoid}. Cannot proceed with download or send message downstream.")
             return None, False
-
         title, duration_min, duration_sec, thumbnail, actual_vidid = await self.details(link, videoid if isinstance(videoid, str) else None)
         if not actual_vidid:
-            print(f"ERROR: Video details nahi mil payi link ke liye: {link} ya videoid: {videoid}")
             return None, False
-
         full_link = self.base + actual_vidid
-        
         downloaded_file = None
         direct = False
-
         if songvideo:
             downloaded_mp4_path, direct = await _download_from_maybechiku_api(full_link, "mp4", actual_vidid)
             if downloaded_mp4_path:
-                print(f"INFO: Song video downloaded: {downloaded_mp4_path}")
                 return downloaded_mp4_path, True
             else:
                 return None, False
         elif songaudio:
             downloaded_mp4_path, direct = await _download_from_maybechiku_api(full_link, "mp4", actual_vidid)
-            
             if downloaded_mp4_path:
                 mp3_output_path = os.path.join("downloads", f"{actual_vidid}.mp3")
-                print(f"INFO: MP4 downloaded, converting to MP3: '{downloaded_mp4_path}' to '{mp3_output_path}'")
-                
                 conversion_success = await _convert_mp4_to_mp3(downloaded_mp4_path, mp3_output_path)
-                
                 if conversion_success:
                     try:
                         os.remove(downloaded_mp4_path)
-                    except OSError as e:
-                        print(f"WARNING: Original MP4 file '{downloaded_mp4_path}' delete karte waqt error: {e}")
+                    except OSError:
+                        pass
                     return mp3_output_path, True
                 else:
-                    print(f"ERROR: MP4 to MP3 conversion failed for {full_link}.")
                     return None, False
             else:
-                print(f"ERROR: Maybechiku API se MP4 download nahi ho paya {full_link} ke liye, isliye MP3 bhi nahi ban paya.")
                 return None, False
         elif video:
-            if await is_on_off(1):
-                downloaded_file, direct = await _download_from_maybechiku_api(full_link, "mp4", actual_vidid)
-            else:
-                downloaded_file, direct = await _download_from_maybechiku_api(full_link, "mp4", actual_vidid)
-            
+            downloaded_file, direct = await _download_from_maybechiku_api(full_link, "mp4", actual_vidid)
             if downloaded_file:
                 return downloaded_file, True
             else:
                 return None, False
         else:
             downloaded_mp4_path, direct = await _download_from_maybechiku_api(full_link, "mp4", actual_vidid)
-            
             if downloaded_mp4_path:
                 mp3_output_path = os.path.join("downloads", f"{actual_vidid}.mp3")
-                print(f"INFO: Default audio download (MP3) request. MP4 downloaded, converting to MP3: '{downloaded_mp4_path}' to '{mp3_output_path}'")
-                
                 conversion_success = await _convert_mp4_to_mp3(downloaded_mp4_path, mp3_output_path)
-                
                 if conversion_success:
                     try:
                         os.remove(downloaded_mp4_path)
-                    except OSError as e:
-                        print(f"WARNING: Original MP4 file '{downloaded_mp4_path}' delete karte waqt error: {e}")
+                    except OSError:
+                        pass
                     return mp3_output_path, True
                 else:
-                    print(f"ERROR: Default audio download (MP3) conversion failed for {full_link}.")
                     return None, False
             else:
-                print(f"ERROR: Default audio download (MP3) ke liye Maybechiku API se MP4 download nahi ho paya {full_link}.")
                 return None, False
