@@ -9,7 +9,7 @@ from distutils.util import strtobool
 
 load_dotenv()
 
-ef parse_list(value):
+def parse_list(value):
     if not value:
         return []
     value = value.strip()
