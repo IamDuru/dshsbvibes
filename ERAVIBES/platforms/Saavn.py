@@ -10,7 +10,7 @@ from config import seconds_to_time
 from ERAVIBES.utils.decorators import asyncify
 
 
-class Saavn:
+class SaavnAPI:
     @staticmethod
     async def valid(url: str) -> bool:
         return "jiosaavn.com" in url
