@@ -7,7 +7,7 @@ from pytgcalls.exceptions import NoActiveGroupCall
 import config
 from config import BANNED_USERS
 from ERAVIBES import HELPABLE, LOGGER, app, userbot
-from ERAVIBES.core.call import Era
+from ERAVIBES.core.call import ERA
 from ERAVIBES.misc import sudo
 from ERAVIBES.utils.database import get_banned_users, get_gbanned
 
@@ -69,10 +69,10 @@ async def init():
                     HELPABLE[mod.__MODULE__.lower()] = mod
 
     await userbot.start()
-    await Era.start()
+    await ERA.start()
     LOGGER("ERAVIBES").info("✦ Successfully Imported Modules...💞")
     try:
-        await Era.stream_call(
+        await ERA.stream_call(
             "http://docs.evostream.com/sample_content/assets/sintel1m720p.mp4"
         )
     except NoActiveGroupCall:
@@ -81,12 +81,12 @@ async def init():
         )
         exit()
 
-    await Era.decorators()
+    await ERA.decorators()
     LOGGER("ERAVIBES").info("✦ Created By ➥ The Dvis...🐝")
     await idle()
     await app.stop()
     await userbot.stop()
-    await Era.stop()
+    await ERA.stop()
 
 
 def main():
