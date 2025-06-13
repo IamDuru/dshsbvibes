@@ -7,8 +7,17 @@ from distutils.util import strtobool
 
 load_dotenv()
 
-def parse_list(value):
-    return [item.strip() for item in value.split()] if value else []
+def parse_list(text: str, sep: str = ",") -> list[str]:
+    if not text:
+        text = ""
+    return [v.strip() for v in str(text).strip("'\"").split(sep) if v.strip()]
+
+
+def getenv(key, default=None):
+    value = default
+    if v := _os.getenv(key):
+        value = v
+    return value
 
 #❖ Get this value from my.telegram.org/apps
 API_ID = int(getenv("API_ID", None))
