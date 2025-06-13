@@ -7,6 +7,11 @@ from distutils.util import strtobool
 
 load_dotenv()
 
+def parse_list(text: str, sep: str = ",") -> list[str]:
+    if not text:
+        text = ""
+    return [v.strip() for v in str(text).strip("'\"").split(sep) if v.strip()]
+
 #❖ Get this value from my.telegram.org/apps
 API_ID = int(getenv("API_ID", None))
 API_HASH = getenv("API_HASH", None)
