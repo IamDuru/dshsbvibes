@@ -1,6 +1,8 @@
 import re
 from os import getenv
 
+import os as _os
+
 from dotenv import load_dotenv
 from pyrogram import filters
 from distutils.util import strtobool
