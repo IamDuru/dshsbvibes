@@ -19,6 +19,7 @@ from .platforms import *
 
 Apple = AppleAPI()
 Carbon = CarbonAPI()
+Savan = Savan()
 SoundCloud = SoundAPI()
 Spotify = SpotifyAPI()
 Resso = RessoAPI()
