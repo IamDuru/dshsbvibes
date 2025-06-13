@@ -96,12 +96,9 @@ SET_CMDS = getenv("SET_CMDS", "False")
 D = ["😘", "👾", "🤝", "👀", "❤️‍🔥", "💘", "😍", "😇", "🕊️", "🐳", "🎉", "🏆", "🗿", "⚡", "💯", "👌", "🍾"]
 
 
+
 #❖ Get your pyrogram v2 session from @StringFatherBot on Telegram
-STRING1 = getenv("STRING_SESSION", None)
-STRING2 = getenv("STRING_SESSION2", None)
-STRING3 = getenv("STRING_SESSION3", None)
-STRING4 = getenv("STRING_SESSION4", None)
-STRING5 = getenv("STRING_SESSION5", None)
+STRING_SESSIONS = parse_list(getenv("STRING_SESSIONS", ""))
 
 
 BANNED_USERS = filters.user()
