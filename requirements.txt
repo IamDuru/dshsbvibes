@@ -21,7 +21,7 @@ pykeyboard
 unidecode
 pyromod
 py-tgcalls==2.2.0
-ntgcalls==2.0.0rc5
+ntgcalls>=2.0.0rc5,<3.0.0
 python-dotenv
 pyyaml
 requests
