@@ -1,32 +1,11 @@
 import re
 from os import getenv
 
-import os as _os
-
 from dotenv import load_dotenv
 from pyrogram import filters
 from distutils.util import strtobool
 
 load_dotenv()
-'''
-def parse_list(value):
-    if not value:
-        return []
-    value = value.strip()
-    if "\n" in value:
-        return [item.strip() for item in value.splitlines() if item.strip()]
-    elif "," in value:
-        return [item.strip() for item in value.split(",") if item.strip()]
-    else:
-        return [value]
-
-
-def getenv(key, default=None):
-    value = default
-    if v := _os.getenv(key):
-        value = v
-    return value
-'''
 
 #❖ Get this value from my.telegram.org/apps
 API_ID = int(getenv("API_ID", None))
