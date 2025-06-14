@@ -1,4 +1,4 @@
-from ERAVIBES.core.bot import ERA
+from ERAVIBES.core.bot import Era
 from ERAVIBES.core.dir import dirr
 from ERAVIBES.core.git import git
 from ERAVIBES.core.userbot import Userbot
@@ -11,7 +11,7 @@ git()
 dbb()
 heroku()
 
-app = ERA()
+app = Era()
 userbot = Userbot()
 
 
