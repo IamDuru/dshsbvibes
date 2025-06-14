@@ -25,15 +25,53 @@ assistantids = []
 
 class Userbot:
     def __init__(self):
-        self.clients = [
-            Client(
-                f"EraString_{i}",
-                api_id=config.API_ID,
-                api_hash=config.API_HASH,
-                session_string=session.strip(),
+        self.clients = []
+        # Initialize clients with available session strings
+        if config.STRING1:
+            self.clients.append(
+                Client(
+                    "EraString_1",
+                    api_id=config.API_ID,
+                    api_hash=config.API_HASH,
+                    session_string=config.STRING1,
+                )
             )
-            for i, session in enumerate(config.STRING_SESSIONS, start=1)
-        ]
+        if config.STRING2:
+            self.clients.append(
+                Client(
+                    "EraString_2",
+                    api_id=config.API_ID,
+                    api_hash=config.API_HASH,
+                    session_string=config.STRING2,
+                )
+            )
+        if config.STRING3:
+            self.clients.append(
+                Client(
+                    "EraString_3",
+                    api_id=config.API_ID,
+                    api_hash=config.API_HASH,
+                    session_string=config.STRING3,
+                )
+            )
+        if config.STRING4:
+            self.clients.append(
+                Client(
+                    "EraString_4",
+                    api_id=config.API_ID,
+                    api_hash=config.API_HASH,
+                    session_string=config.STRING4,
+                )
+            )
+        if config.STRING5:
+            self.clients.append(
+                Client(
+                    "EraString_5",
+                    api_id=config.API_ID,
+                    api_hash=config.API_HASH,
+                    session_string=config.STRING5,
+                )
+            )
         self.handlers = []
 
     async def _start(self, client, index):
