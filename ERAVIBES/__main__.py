@@ -30,11 +30,13 @@ async def init():
         users = await get_banned_users()
         for user_id in users:
             BANNED_USERS.add(user_id)
-    except Exception:
-        pass
+    except Exception:        pass
     await sudo()
     await app.start()
-    for mod in app.load_plugins("ERAVIBES/plugins"):
+    # Load plugins
+    app.plugins_dir = "ERAVIBES/plugins"
+    modules = app.load_plugins()
+    for mod in modules:
         if mod and hasattr(mod, "__MODULE__") and mod.__MODULE__:
             if hasattr(mod, "__HELP__") and mod.__HELP__:
                 HELPABLE[mod.__MODULE__.lower()] = mod
@@ -60,9 +62,10 @@ async def init():
             result = await app.run_shell_command(
                 ["uv", "pip", "install", "--system", "-r", req]
             )
-            if result["returncode"] != 0:                logger.error(f"Error installing requirements: {result['stderr']}")
-
-        for mod in app.load_plugins("xtraplugins"):
+            if result["returncode"] != 0:                logger.error(f"Error installing requirements: {result['stderr']}")        # Load extra plugins
+        app.plugins_dir = "xtraplugins"
+        extra_modules = app.load_plugins()
+        for mod in extra_modules:
             if mod and hasattr(mod, "__MODULE__") and mod.__MODULE__:
                 if hasattr(mod, "__HELP__") and mod.__HELP__:
                     HELPABLE[mod.__MODULE__.lower()] = mod
