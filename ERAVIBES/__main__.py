@@ -34,7 +34,7 @@ async def init():
         pass
     await sudo()
     await app.start()
-    for mod in app.load_plugins_from("ERAVIBES/plugins"):
+    for mod in app.load_plugins("ERAVIBES/plugins"):
         if mod and hasattr(mod, "__MODULE__") and mod.__MODULE__:
             if hasattr(mod, "__HELP__") and mod.__HELP__:
                 HELPABLE[mod.__MODULE__.lower()] = mod
@@ -60,10 +60,9 @@ async def init():
             result = await app.run_shell_command(
                 ["uv", "pip", "install", "--system", "-r", req]
             )
-            if result["returncode"] != 0:
-                logger.error(f"Error installing requirements: {result['stderr']}")
+            if result["returncode"] != 0:                logger.error(f"Error installing requirements: {result['stderr']}")
 
-        for mod in app.load_plugins_from("xtraplugins"):
+        for mod in app.load_plugins("xtraplugins"):
             if mod and hasattr(mod, "__MODULE__") and mod.__MODULE__:
                 if hasattr(mod, "__HELP__") and mod.__HELP__:
                     HELPABLE[mod.__MODULE__.lower()] = mod
