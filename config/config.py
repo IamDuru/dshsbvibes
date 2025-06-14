@@ -8,7 +8,7 @@ from pyrogram import filters
 from distutils.util import strtobool
 
 load_dotenv()
-
+'''
 def parse_list(value):
     if not value:
         return []
@@ -26,6 +26,7 @@ def getenv(key, default=None):
     if v := _os.getenv(key):
         value = v
     return value
+'''
 
 #❖ Get this value from my.telegram.org/apps
 API_ID = int(getenv("API_ID", None))
@@ -118,7 +119,11 @@ D = ["😘", "👾", "🤝", "👀", "❤️‍🔥", "💘", "😍", "😇", "�
 
 
 #❖ Get your pyrogram v2 session from @StringFatherBot on Telegram
-STRING_SESSIONS = parse_list(getenv("STRING_SESSIONS", ""))
+STRING1 = getenv("STRING_SESSION", None)
+STRING2 = getenv("STRING_SESSION2", None)
+STRING3 = getenv("STRING_SESSION3", None)
+STRING4 = getenv("STRING_SESSION4", None)
+STRING5 = getenv("STRING_SESSION5", None)
 
 
 BANNED_USERS = filters.user()
