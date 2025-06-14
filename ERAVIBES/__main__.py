@@ -16,8 +16,8 @@ loop = asyncio.get_event_loop()
 
 
 async def init():
-    if len(config.STRING_SESSIONS) == 0:
-        logger.error("✦ Assistant client variables not defined, exiting...")
+    if not any([config.STRING1, config.STRING2, config.STRING3, config.STRING4, config.STRING5]):
+        logger.error("✦ No Assistant client variables defined, exiting...")
         return
     if not config.SPOTIFY_CLIENT_ID and not config.SPOTIFY_CLIENT_SECRET:
         logger.warning(
