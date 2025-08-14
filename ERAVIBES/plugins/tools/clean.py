@@ -11,15 +11,15 @@ from ERAVIBES.misc import SUDOERS
 @app.on_message(filters.command("clean") & SUDOERS)
 async def clean(_, message):
     A = await message.reply_text("ᴄʟᴇᴀɴɪɴɢ ᴛᴇᴍᴘ ᴅɪʀᴇᴄᴛᴏʀɪᴇs...")
-    dir = "downloads"
-    dir1 = "cache"
-    shutil.rmtree(dir)
-    shutil.rmtree(dir1)
-    os.mkdir(dir)
-    os.mkdir(dir1)
-    await A.edit("ᴛᴇᴍᴘ ᴅɪʀᴇᴄᴛᴏʀɪᴇs ᴀʀᴇ ᴄʟᴇᴀɴᴇᴅ")
+    dirs = ["downloads", "cache"]
+    for d in dirs:
+        if os.path.exists(d):
+            shutil.rmtree(d)
+        os.mkdir(d)
+    await A.edit("✅ ᴛᴇᴍᴘ ᴅɪʀᴇᴄᴛᴏʀɪᴇs ᴀʀᴇ ᴄʟᴇᴀɴᴇᴅ")
 
-#-------------------
+
+# -------------------
 
 TEST = "dQw4w9WgXcQ"
 
@@ -33,14 +33,16 @@ async def chk(_, m: Message):
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as s:
             async with s.get(f"{API_URL}/song/{TEST}?api={API_KEY}") as r:
                 api_ok = r.status == 200
-    except: pass
+    except:
+        pass
 
     # 2. Check cookies
     try:
         ck_ok = await YouTube.exists(TEST, videoid=True)
-    except: pass
+    except:
+        pass
 
-    await wait.edit
+    await wait.edit(
         "❖ **ʏσᴜᴛᴜʙє ʜєᴧʟᴛʜʏ** ❖\n\n"
         f"● **ᴧᴘɪ** ➥  {'✅ ᴧʟɪᴠє' if api_ok else '❌ ᴅσᴡη'}\n"
         f"● **ᴄσσᴋɪєꜱ** ➥  {'✅ ᴡσʀᴋɪηɢ' if ck_ok else '❌ ᴅєᴧᴅ'}",
