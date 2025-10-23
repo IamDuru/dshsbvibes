@@ -75,9 +75,59 @@ async def fetch_song(query: str, streamtype: str) -> dict:
         async with aiohttp.ClientSession() as session:
             async with session.get(api_url, params=params) as response:
                 data = await response.json()
+                print(f"API response: {data}")  # Debug log
                 return data
     except Exception as e:
+        print(f"API error: {e}")  # Debug log
         return {"error": str(e)}
+
+
+async def download_tg_media(tg_link: str) -> Optional[str]:
+    """TG link se media download karta hai locally"""
+    # Parse TG link
+    c_username, message_id = parse_tg_link(tg_link)
+    if not c_username or not message_id:
+        print(f"Failed to parse TG link: {tg_link}")
+        return None
+
+    # Assume c_username is username or id
+    if c_username.startswith("@"):
+        c_username = c_username[1:]
+
+    try:
+        app = __import__("ERAVIBES", fromlist=["app"]).app
+        msg = await app.get_messages(c_username, message_id)
+        if not msg or not msg.media:
+            print(f"No media in TG message: {tg_link}")
+            return None
+
+        filex = msg.audio or msg.video or msg.document
+        if not filex:
+            print(f"No filex in TG message")
+            return None
+
+        # Make filepath like Telegram.py
+        if msg.audio:
+            file_name = f"{filex.file_unique_id}.{filex.file_name.split('.')[-1] if filex.file_name else 'ogg'}"
+        elif msg.video or msg.document:
+            file_name = f"{filex.file_unique_id}.{filex.file_name.split('.')[-1] if filex.file_name else 'mp4'}"
+        else:
+            print("Not audio/video")
+            return None
+
+        fname = os.path.join("downloads", file_name)
+        if os.path.exists(fname):
+            print(f"File already exists: {fname}")
+            return fname
+
+        # Download
+        await app.download_media(msg, fname)
+        print(f"Downloaded TG media to: {fname}")
+        return fname
+
+    except Exception as e:
+        print(f"Error downloading TG media: {e}")
+        return None
 
 # =============================================
 
@@ -286,7 +336,13 @@ class YouTubeAPI:
             streamtype = "audio"
             song_data = await fetch_song(query, streamtype)
             if song_data and "link" in song_data and not song_data.get("error"):
-                return song_data["link"]
+                tg_link = song_data["link"]
+                print(f"API returned TG link: {tg_link}")
+                if tg_link.startswith("https://t.me/"):
+                    local_path = await download_tg_media(tg_link)
+                    if local_path:
+                        return local_path  # direct=False
+                return tg_link  # fallback direct if not TG
 
             try:
                 async with aiohttp.ClientSession() as session:
@@ -380,26 +436,49 @@ class YouTubeAPI:
             streamtype = "video"
             song_data = await fetch_song(query, streamtype)
             if song_data and "link" in song_data and not song_data.get("error"):
-                return song_data["link"], True
+                tg_link = song_data["link"]
+                print(f"API returned TG link for songvideo: {tg_link}")
+                if tg_link.startswith("https://t.me/"):
+                    local_path = await download_tg_media(tg_link)
+                    if local_path:
+                        return local_path, False
+                return tg_link, True  # fallback
             await loop.run_in_executor(None, song_video_dl)
-            return f"downloads/{title}.mp4", True
+            return f"downloads/{title}.mp4", False
         elif songaudio:
             # API try karenge
             query = title
             streamtype = "audio"
             song_data = await fetch_song(query, streamtype)
             if song_data and "link" in song_data and not song_data.get("error"):
-                return song_data["link"], True
+                tg_link = song_data["link"]
+                print(f"API returned TG link for songaudio: {tg_link}")
+                if tg_link.startswith("https://t.me/"):
+                    local_path = await download_tg_media(tg_link)
+                    if local_path:
+                        return local_path, False
+                return tg_link, True  # fallback
             await loop.run_in_executor(None, song_audio_dl)
-            return f"downloads/{title}.mp3", True
+            return f"downloads/{title}.mp3", False
         elif video:
             # Pehle API try karenge TG link ke liye
             query = await self.title(link, videoid)
             streamtype = "video"
             song_data = await fetch_song(query, streamtype)
             if song_data and "link" in song_data and not song_data.get("error"):
-                downloaded_file = song_data["link"]
-                direct = True
+                tg_link = song_data["link"]
+                print(f"API returned TG link for video: {tg_link}")
+                if tg_link.startswith("https://t.me/"):
+                    local_path = await download_tg_media(tg_link)
+                    if local_path:
+                        downloaded_file = local_path
+                        direct = False  # local file
+                    else:
+                        downloaded_file = tg_link
+                        direct = True
+                else:
+                    downloaded_file = tg_link
+                    direct = True
             else:
                 if await is_on_off(1):
                     downloaded_file = await loop.run_in_executor(None, video_dl)
