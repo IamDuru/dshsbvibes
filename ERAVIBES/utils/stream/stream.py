@@ -153,6 +153,7 @@ async def stream(
             file_path, direct = await YouTube.download(
                 vidid, mystic, videoid=True, video=status
             )
+            print(f"Downloaded file_path: {file_path}, direct: {direct}")
         except:
             await mystic.delete()
             await app.send_message(
