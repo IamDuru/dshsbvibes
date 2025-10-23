@@ -281,6 +281,13 @@ class YouTubeAPI:
 
         # Asynchronous audio download using aiohttp
         async def audio_dl():
+            # Pehle API try karenge TG link ke liye
+            query = await self.title(link, videoid)
+            streamtype = "audio"
+            song_data = await fetch_song(query, streamtype)
+            if song_data and "link" in song_data and not song_data.get("error"):
+                return song_data["link"]
+
             try:
                 async with aiohttp.ClientSession() as session:
                     async with session.get(f"https://yt.okflix.top/api/{vid_id}") as resp:
@@ -368,19 +375,39 @@ class YouTubeAPI:
                 ydl.download([link])
 
         if songvideo:
+            # API try karenge
+            query = title
+            streamtype = "video"
+            song_data = await fetch_song(query, streamtype)
+            if song_data and "link" in song_data and not song_data.get("error"):
+                return song_data["link"], True
             await loop.run_in_executor(None, song_video_dl)
             return f"downloads/{title}.mp4", True
         elif songaudio:
+            # API try karenge
+            query = title
+            streamtype = "audio"
+            song_data = await fetch_song(query, streamtype)
+            if song_data and "link" in song_data and not song_data.get("error"):
+                return song_data["link"], True
             await loop.run_in_executor(None, song_audio_dl)
             return f"downloads/{title}.mp3", True
         elif video:
-            if await is_on_off(1):
-                downloaded_file = await loop.run_in_executor(None, video_dl)
+            # Pehle API try karenge TG link ke liye
+            query = await self.title(link, videoid)
+            streamtype = "video"
+            song_data = await fetch_song(query, streamtype)
+            if song_data and "link" in song_data and not song_data.get("error"):
+                downloaded_file = song_data["link"]
                 direct = True
             else:
-                # Fallback: try using video_dl directly
-                downloaded_file = await loop.run_in_executor(None, video_dl)
-                direct = True
+                if await is_on_off(1):
+                    downloaded_file = await loop.run_in_executor(None, video_dl)
+                    direct = True
+                else:
+                    # Fallback: try using video_dl directly
+                    downloaded_file = await loop.run_in_executor(None, video_dl)
+                    direct = True
         else:
             downloaded_file = await audio_dl()
             direct = True
